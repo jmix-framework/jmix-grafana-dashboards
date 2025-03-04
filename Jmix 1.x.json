@@ -307,6 +307,280 @@
         "x": 0,
         "y": 6
       },
+      "id": 37,
+      "panels": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_JMIX_MONITORING}"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "barWidthFactor": 0.6,
+                "drawStyle": "line",
+                "fillOpacity": 10,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "insertNulls": false,
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "never",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "min": 0,
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              },
+              "unit": "ops"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 24,
+            "x": 0,
+            "y": 8
+          },
+          "id": 38,
+          "options": {
+            "legend": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "displayMode": "list",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "hideZeros": false,
+              "mode": "multi",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "11.4.0",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${DS_JMIX_MONITORING}"
+              },
+              "editorMode": "code",
+              "expr": "sum(rate(http_server_requests_seconds_count{application=\"$application\", instance=~\"$instance\"}[1m]))",
+              "format": "time_series",
+              "intervalFactor": 1,
+              "legendFormat": "HTTP",
+              "range": true,
+              "refId": "A"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${DS_JMIX_MONITORING}"
+              },
+              "editorMode": "code",
+              "expr": "sum(rate(jmix_ui_screens_seconds_count{application=\"$application\", instance=~\"$instance\", lifeCycle=\"init\"}[1m]))",
+              "hide": false,
+              "instant": false,
+              "legendFormat": "JMIX",
+              "range": true,
+              "refId": "C"
+            }
+          ],
+          "title": "Rate",
+          "type": "timeseries"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_JMIX_MONITORING}"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "barWidthFactor": 0.6,
+                "drawStyle": "line",
+                "fillOpacity": 10,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "insertNulls": false,
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "never",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "min": 0,
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              },
+              "unit": "s"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 7,
+            "w": 24,
+            "x": 0,
+            "y": 16
+          },
+          "id": 39,
+          "options": {
+            "legend": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "displayMode": "list",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "hideZeros": false,
+              "mode": "multi",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "11.4.0",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${DS_JMIX_MONITORING}"
+              },
+              "editorMode": "code",
+              "expr": "sum(rate(http_server_requests_seconds_sum{application=\"$application\", instance=~\"$instance\", status!~\"5..\"}[1m]))/sum(rate(http_server_requests_seconds_count{application=\"$application\", instance=~\"$instance\", status!~\"5..\"}[1m]))",
+              "format": "time_series",
+              "hide": false,
+              "intervalFactor": 1,
+              "legendFormat": "HTTP - AVG",
+              "range": true,
+              "refId": "A"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${DS_JMIX_MONITORING}"
+              },
+              "editorMode": "code",
+              "expr": "max(http_server_requests_seconds_max{application=\"$application\", instance=~\"$instance\", status!~\"5..\"})",
+              "format": "time_series",
+              "hide": false,
+              "intervalFactor": 1,
+              "legendFormat": "HTTP - MAX",
+              "range": true,
+              "refId": "B"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${DS_JMIX_MONITORING}"
+              },
+              "editorMode": "code",
+              "expr": "sum (rate(jmix_ui_screens_seconds_sum{application=\"$application\", instance=~\"$instance\"}[5m]))/sum (rate(jmix_ui_screens_seconds_count{application=\"$application\", instance=~\"$instance\", lifeCycle=\"beforeShow\"}[5m])) ",
+              "hide": false,
+              "instant": false,
+              "legendFormat": "Jmix Screens-AVG",
+              "range": true,
+              "refId": "C"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${DS_JMIX_MONITORING}"
+              },
+              "editorMode": "code",
+              "expr": "max(sum by (screen) (jmix_ui_screens_seconds_max{application=\"$application\"}))",
+              "hide": false,
+              "instant": false,
+              "legendFormat": "Jmix-Max",
+              "range": true,
+              "refId": "D"
+            }
+          ],
+          "title": "Duration",
+          "type": "timeseries"
+        }
+      ],
+      "title": "Requests",
+      "type": "row"
+    },
+    {
+      "collapsed": true,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 7
+      },
       "id": 27,
       "panels": [
         {
@@ -371,7 +645,7 @@
             "h": 9,
             "w": 24,
             "x": 0,
-            "y": 54
+            "y": 7
           },
           "id": 33,
           "options": {
@@ -462,7 +736,7 @@
             "h": 10,
             "w": 24,
             "x": 0,
-            "y": 147
+            "y": 973
           },
           "id": 34,
           "options": {
@@ -536,7 +810,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green"
+                    "color": "green",
+                    "value": null
                   },
                   {
                     "color": "red",
@@ -552,7 +827,7 @@
             "h": 9,
             "w": 24,
             "x": 0,
-            "y": 157
+            "y": 983
           },
           "id": 35,
           "options": {
@@ -591,7 +866,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 7
+        "y": 8
       },
       "id": 8,
       "panels": [
@@ -648,7 +923,8 @@
                     "value": 80
                   }
                 ]
-              }
+              },
+              "unit": "ops"
             },
             "overrides": []
           },
@@ -656,7 +932,7 @@
             "h": 9,
             "w": 24,
             "x": 0,
-            "y": 461
+            "y": 405
           },
           "id": 6,
           "options": {
@@ -747,7 +1023,7 @@
             "h": 10,
             "w": 24,
             "x": 0,
-            "y": 470
+            "y": 414
           },
           "id": 29,
           "options": {
@@ -838,7 +1114,7 @@
             "h": 9,
             "w": 24,
             "x": 0,
-            "y": 480
+            "y": 424
           },
           "id": 30,
           "options": {
@@ -929,7 +1205,7 @@
             "h": 7,
             "w": 24,
             "x": 0,
-            "y": 489
+            "y": 433
           },
           "id": 25,
           "options": {
@@ -1020,7 +1296,7 @@
             "h": 7,
             "w": 24,
             "x": 0,
-            "y": 496
+            "y": 440
           },
           "id": 26,
           "options": {
@@ -1050,7 +1326,7 @@
           "type": "timeseries"
         }
       ],
-      "title": "Requests of all screens",
+      "title": "Requests by Screens",
       "type": "row"
     },
     {
@@ -1059,7 +1335,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 8
+        "y": 9
       },
       "id": 7,
       "panels": [
@@ -1118,38 +1394,13 @@
                 ]
               }
             },
-            "overrides": [
-              {
-                "__systemRef": "hideSeriesFrom",
-                "matcher": {
-                  "id": "byNames",
-                  "options": {
-                    "mode": "exclude",
-                    "names": [
-                      "petclinic_Pet.browse"
-                    ],
-                    "prefix": "All except:",
-                    "readOnly": true
-                  }
-                },
-                "properties": [
-                  {
-                    "id": "custom.hideFrom",
-                    "value": {
-                      "legend": false,
-                      "tooltip": false,
-                      "viz": true
-                    }
-                  }
-                ]
-              }
-            ]
+            "overrides": []
           },
           "gridPos": {
             "h": 7,
             "w": 24,
             "x": 0,
-            "y": 9
+            "y": 406
           },
           "id": 11,
           "options": {
@@ -1240,7 +1491,7 @@
             "h": 7,
             "w": 24,
             "x": 0,
-            "y": 16
+            "y": 413
           },
           "id": 12,
           "options": {
@@ -1341,7 +1592,7 @@
             "h": 7,
             "w": 24,
             "x": 0,
-            "y": 23
+            "y": 420
           },
           "id": 13,
           "options": {
@@ -1432,7 +1683,7 @@
             "h": 7,
             "w": 24,
             "x": 0,
-            "y": 30
+            "y": 427
           },
           "id": 16,
           "options": {
@@ -1526,7 +1777,7 @@
             "h": 7,
             "w": 24,
             "x": 0,
-            "y": 37
+            "y": 434
           },
           "id": 17,
           "options": {
@@ -1617,7 +1868,7 @@
             "h": 7,
             "w": 24,
             "x": 0,
-            "y": 44
+            "y": 441
           },
           "id": 18,
           "options": {
@@ -1647,7 +1898,7 @@
           "type": "timeseries"
         }
       ],
-      "title": "Requsts by screen type - $screen",
+      "title": "Requsts by Screen Type - $screen",
       "type": "row"
     }
   ],
