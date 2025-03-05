@@ -42,7 +42,7 @@
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
-  "id": 5,
+  "id": 6,
   "links": [],
   "panels": [
     {
@@ -299,7 +299,7 @@
       "type": "gauge"
     },
     {
-      "collapsed": false,
+      "collapsed": true,
       "gridPos": {
         "h": 1,
         "w": 24,
@@ -307,265 +307,264 @@
         "y": 6
       },
       "id": 35,
-      "panels": [],
+      "panels": [
+        {
+          "datasource": "${DS_JMIX_MONITORING}",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "barWidthFactor": 0.6,
+                "drawStyle": "line",
+                "fillOpacity": 10,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "insertNulls": false,
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "never",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "min": 0,
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green"
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              },
+              "unit": "ops"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 6,
+            "w": 24,
+            "x": 0,
+            "y": 7
+          },
+          "id": 36,
+          "options": {
+            "legend": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "displayMode": "list",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "hideZeros": false,
+              "mode": "multi",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "11.4.0",
+          "targets": [
+            {
+              "datasource": "${DS_JMIX_MONITORING}",
+              "editorMode": "code",
+              "expr": "sum(rate(http_server_requests_seconds_count{application=\"$application\", instance=~\"$instance\"}[1m]))",
+              "format": "time_series",
+              "intervalFactor": 1,
+              "legendFormat": "HTTP",
+              "range": true,
+              "refId": "A"
+            },
+            {
+              "datasource": "${DS_JMIX_MONITORING}",
+              "editorMode": "code",
+              "expr": "sum(rate(jmix_ui_views_seconds_count{application=\"$application\", instance=~\"$instance\", lifeCycle=\"init\"}[1m]))",
+              "hide": false,
+              "instant": false,
+              "legendFormat": "JMIX",
+              "range": true,
+              "refId": "C"
+            }
+          ],
+          "title": "Rate",
+          "type": "timeseries"
+        },
+        {
+          "datasource": "${DS_JMIX_MONITORING}",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "barWidthFactor": 0.6,
+                "drawStyle": "line",
+                "fillOpacity": 10,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "insertNulls": false,
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "never",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "min": 0,
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green"
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              },
+              "unit": "s"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 6,
+            "w": 24,
+            "x": 0,
+            "y": 83
+          },
+          "id": 37,
+          "options": {
+            "legend": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "displayMode": "list",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "hideZeros": false,
+              "mode": "multi",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "11.4.0",
+          "targets": [
+            {
+              "datasource": "${DS_JMIX_MONITORING}",
+              "editorMode": "code",
+              "expr": "sum(rate(http_server_requests_seconds_sum{application=\"$application\", instance=~\"$instance\", status!~\"5..\"}[1m]))/sum(rate(http_server_requests_seconds_count{application=\"$application\", instance=~\"$instance\", status!~\"5..\"}[1m]))",
+              "format": "time_series",
+              "hide": false,
+              "intervalFactor": 1,
+              "legendFormat": "HTTP - AVG",
+              "range": true,
+              "refId": "A"
+            },
+            {
+              "datasource": "${DS_JMIX_MONITORING}",
+              "editorMode": "code",
+              "expr": "max(http_server_requests_seconds_max{application=\"$application\", instance=~\"$instance\", status!~\"5..\"})",
+              "format": "time_series",
+              "hide": false,
+              "intervalFactor": 1,
+              "legendFormat": "HTTP - MAX",
+              "range": true,
+              "refId": "B"
+            },
+            {
+              "datasource": "${DS_JMIX_MONITORING}",
+              "editorMode": "code",
+              "expr": "sum (rate(jmix_ui_views_seconds_sum{application=\"$application\", instance=~\"$instance\", lifeCycle=~\"beforeShow|create|init|inject|load|ready\"}[5m]))/sum (rate(jmix_ui_views_seconds_count{application=\"$application\", instance=~\"$instance\", lifeCycle=\"beforeShow\"}[5m])) ",
+              "hide": false,
+              "instant": false,
+              "legendFormat": "Jmix Openinig Views - AVG",
+              "range": true,
+              "refId": "C"
+            },
+            {
+              "datasource": "${DS_JMIX_MONITORING}",
+              "editorMode": "code",
+              "expr": "max(sum by (screen) (jmix_ui_views_seconds_max{application=\"$application\", lifeCycle=~\"beforeShow|create|init|inject|load|ready\"}))",
+              "hide": false,
+              "instant": false,
+              "legendFormat": "Jmix Opening Views - MAX",
+              "range": true,
+              "refId": "D"
+            },
+            {
+              "datasource": "${DS_JMIX_MONITORING}",
+              "editorMode": "code",
+              "expr": "sum (rate(jmix_ui_views_seconds_sum{application=\"$application\", instance=~\"$instance\", lifeCycle=~\"afterClose|beforeClose\"}[5m]))/sum (rate(jmix_ui_views_seconds_count{application=\"$application\", instance=~\"$instance\", lifeCycle=\"afterClose\"}[5m])) ",
+              "hide": false,
+              "instant": false,
+              "legendFormat": "Jmix Closing Views - AVG",
+              "range": true,
+              "refId": "E"
+            },
+            {
+              "datasource": "${DS_JMIX_MONITORING}",
+              "editorMode": "code",
+              "expr": "max(sum by (screen) (jmix_ui_views_seconds_max{application=\"$application\", lifeCycle=~\"afterClose|beforeClose\"}))",
+              "hide": false,
+              "instant": false,
+              "legendFormat": "Jmix Closing Views - MAX",
+              "range": true,
+              "refId": "F"
+            }
+          ],
+          "title": "Duration",
+          "type": "timeseries"
+        }
+      ],
       "title": "Requests",
       "type": "row"
-    },
-    {
-      "datasource": "${DS_JMIX_MONITORING}",
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "palette-classic"
-          },
-          "custom": {
-            "axisBorderShow": false,
-            "axisCenteredZero": false,
-            "axisColorMode": "text",
-            "axisLabel": "",
-            "axisPlacement": "auto",
-            "barAlignment": 0,
-            "barWidthFactor": 0.6,
-            "drawStyle": "line",
-            "fillOpacity": 10,
-            "gradientMode": "none",
-            "hideFrom": {
-              "legend": false,
-              "tooltip": false,
-              "viz": false
-            },
-            "insertNulls": false,
-            "lineInterpolation": "linear",
-            "lineWidth": 1,
-            "pointSize": 5,
-            "scaleDistribution": {
-              "type": "linear"
-            },
-            "showPoints": "never",
-            "spanNulls": false,
-            "stacking": {
-              "group": "A",
-              "mode": "none"
-            },
-            "thresholdsStyle": {
-              "mode": "off"
-            }
-          },
-          "mappings": [],
-          "min": 0,
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "red",
-                "value": 80
-              }
-            ]
-          },
-          "unit": "ops"
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 6,
-        "w": 24,
-        "x": 0,
-        "y": 7
-      },
-      "id": 36,
-      "options": {
-        "legend": {
-          "calcs": [
-            "lastNotNull"
-          ],
-          "displayMode": "list",
-          "placement": "bottom",
-          "showLegend": true
-        },
-        "tooltip": {
-          "hideZeros": false,
-          "mode": "multi",
-          "sort": "none"
-        }
-      },
-      "pluginVersion": "11.4.0",
-      "targets": [
-        {
-          "datasource": "${DS_JMIX_MONITORING}",
-          "editorMode": "code",
-          "expr": "sum(rate(http_server_requests_seconds_count{application=\"$application\", instance=~\"$instance\"}[1m]))",
-          "format": "time_series",
-          "intervalFactor": 1,
-          "legendFormat": "HTTP",
-          "range": true,
-          "refId": "A"
-        },
-        {
-          "datasource": "${DS_JMIX_MONITORING}",
-          "editorMode": "code",
-          "expr": "sum(rate(jmix_ui_views_seconds_count{application=\"$application\", instance=~\"$instance\", lifeCycle=\"init\"}[1m]))",
-          "hide": false,
-          "instant": false,
-          "legendFormat": "JMIX",
-          "range": true,
-          "refId": "C"
-        }
-      ],
-      "title": "Rate",
-      "type": "timeseries"
-    },
-    {
-      "datasource": "${DS_JMIX_MONITORING}",
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "palette-classic"
-          },
-          "custom": {
-            "axisBorderShow": false,
-            "axisCenteredZero": false,
-            "axisColorMode": "text",
-            "axisLabel": "",
-            "axisPlacement": "auto",
-            "barAlignment": 0,
-            "barWidthFactor": 0.6,
-            "drawStyle": "line",
-            "fillOpacity": 10,
-            "gradientMode": "none",
-            "hideFrom": {
-              "legend": false,
-              "tooltip": false,
-              "viz": false
-            },
-            "insertNulls": false,
-            "lineInterpolation": "linear",
-            "lineWidth": 1,
-            "pointSize": 5,
-            "scaleDistribution": {
-              "type": "linear"
-            },
-            "showPoints": "never",
-            "spanNulls": false,
-            "stacking": {
-              "group": "A",
-              "mode": "none"
-            },
-            "thresholdsStyle": {
-              "mode": "off"
-            }
-          },
-          "mappings": [],
-          "min": 0,
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "red",
-                "value": 80
-              }
-            ]
-          },
-          "unit": "s"
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 6,
-        "w": 24,
-        "x": 0,
-        "y": 13
-      },
-      "id": 37,
-      "options": {
-        "legend": {
-          "calcs": [
-            "lastNotNull"
-          ],
-          "displayMode": "list",
-          "placement": "bottom",
-          "showLegend": true
-        },
-        "tooltip": {
-          "hideZeros": false,
-          "mode": "multi",
-          "sort": "none"
-        }
-      },
-      "pluginVersion": "11.4.0",
-      "targets": [
-        {
-          "datasource": "${DS_JMIX_MONITORING}",
-          "editorMode": "code",
-          "expr": "sum(rate(http_server_requests_seconds_sum{application=\"$application\", instance=~\"$instance\", status!~\"5..\"}[1m]))/sum(rate(http_server_requests_seconds_count{application=\"$application\", instance=~\"$instance\", status!~\"5..\"}[1m]))",
-          "format": "time_series",
-          "hide": false,
-          "intervalFactor": 1,
-          "legendFormat": "HTTP - AVG",
-          "range": true,
-          "refId": "A"
-        },
-        {
-          "datasource": "${DS_JMIX_MONITORING}",
-          "editorMode": "code",
-          "expr": "max(http_server_requests_seconds_max{application=\"$application\", instance=~\"$instance\", status!~\"5..\"})",
-          "format": "time_series",
-          "hide": false,
-          "intervalFactor": 1,
-          "legendFormat": "HTTP - MAX",
-          "range": true,
-          "refId": "B"
-        },
-        {
-          "datasource": "${DS_JMIX_MONITORING}",
-          "editorMode": "code",
-          "expr": "sum (rate(jmix_ui_views_seconds_sum{application=\"$application\", instance=~\"$instance\", lifeCycle=~\"beforeShow|create|init|inject|load|ready\"}[5m]))/sum (rate(jmix_ui_views_seconds_count{application=\"$application\", instance=~\"$instance\", lifeCycle=\"beforeShow\"}[5m])) ",
-          "hide": false,
-          "instant": false,
-          "legendFormat": "Jmix Openinig Views - AVG",
-          "range": true,
-          "refId": "C"
-        },
-        {
-          "datasource": "${DS_JMIX_MONITORING}",
-          "editorMode": "code",
-          "expr": "max(sum by (screen) (jmix_ui_views_seconds_max{application=\"$application\", lifeCycle=~\"beforeShow|create|init|inject|load|ready\"}))",
-          "hide": false,
-          "instant": false,
-          "legendFormat": "Jmix Opening Views - MAX",
-          "range": true,
-          "refId": "D"
-        },
-        {
-          "datasource": "${DS_JMIX_MONITORING}",
-          "editorMode": "code",
-          "expr": "sum (rate(jmix_ui_views_seconds_sum{application=\"$application\", instance=~\"$instance\", lifeCycle=~\"afterClose|beforeClose\"}[5m]))/sum (rate(jmix_ui_views_seconds_count{application=\"$application\", instance=~\"$instance\", lifeCycle=\"afterClose\"}[5m])) ",
-          "hide": false,
-          "instant": false,
-          "legendFormat": "Jmix Closing Views - AVG",
-          "range": true,
-          "refId": "E"
-        },
-        {
-          "datasource": "${DS_JMIX_MONITORING}",
-          "editorMode": "code",
-          "expr": "max(sum by (screen) (jmix_ui_views_seconds_max{application=\"$application\", lifeCycle=~\"afterClose|beforeClose\"}))",
-          "hide": false,
-          "instant": false,
-          "legendFormat": "Jmix Closing Views - MAX",
-          "range": true,
-          "refId": "F"
-        }
-      ],
-      "title": "Duration",
-      "type": "timeseries"
     },
     {
       "collapsed": false,
@@ -573,7 +572,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 19
+        "y": 7
       },
       "id": 8,
       "panels": [],
@@ -642,7 +641,7 @@
         "h": 9,
         "w": 24,
         "x": 0,
-        "y": 20
+        "y": 8
       },
       "id": 6,
       "options": {
@@ -733,7 +732,7 @@
         "h": 10,
         "w": 24,
         "x": 0,
-        "y": 29
+        "y": 17
       },
       "id": 29,
       "options": {
@@ -821,10 +820,101 @@
         "overrides": []
       },
       "gridPos": {
+        "h": 9,
+        "w": 24,
+        "x": 0,
+        "y": 27
+      },
+      "id": 30,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "hideZeros": false,
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "11.4.0",
+      "targets": [
+        {
+          "editorMode": "code",
+          "expr": "max by (view)(sum by(view,instance) (jmix_ui_views_seconds_max{application=\"$application\", instance=~\"$instance\", view!~\".*Fragment\", lifeCycle=~\"beforeShow|create|init|inject|load|ready\"}))",
+          "legendFormat": "__auto",
+          "range": true,
+          "refId": "A"
+        }
+      ],
+      "title": "Views Opening Max Time",
+      "type": "timeseries"
+    },
+    {
+      "datasource": "${DS_JMIX_MONITORING}",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "barWidthFactor": 0.6,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "s"
+        },
+        "overrides": []
+      },
+      "gridPos": {
         "h": 10,
         "w": 24,
         "x": 0,
-        "y": 39
+        "y": 36
       },
       "id": 32,
       "options": {
@@ -915,98 +1005,7 @@
         "h": 9,
         "w": 24,
         "x": 0,
-        "y": 49
-      },
-      "id": 30,
-      "options": {
-        "legend": {
-          "calcs": [],
-          "displayMode": "list",
-          "placement": "bottom",
-          "showLegend": true
-        },
-        "tooltip": {
-          "hideZeros": false,
-          "mode": "single",
-          "sort": "none"
-        }
-      },
-      "pluginVersion": "11.4.0",
-      "targets": [
-        {
-          "editorMode": "code",
-          "expr": "max by (view)(sum by(view,instance) (jmix_ui_views_seconds_max{application=\"$application\", instance=~\"$instance\", view!~\".*Fragment\", lifeCycle=~\"beforeShow|create|init|inject|load|ready\"}))",
-          "legendFormat": "__auto",
-          "range": true,
-          "refId": "A"
-        }
-      ],
-      "title": "Views Opening Max Time",
-      "type": "timeseries"
-    },
-    {
-      "datasource": "${DS_JMIX_MONITORING}",
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "palette-classic"
-          },
-          "custom": {
-            "axisBorderShow": false,
-            "axisCenteredZero": false,
-            "axisColorMode": "text",
-            "axisLabel": "",
-            "axisPlacement": "auto",
-            "barAlignment": 0,
-            "barWidthFactor": 0.6,
-            "drawStyle": "line",
-            "fillOpacity": 0,
-            "gradientMode": "none",
-            "hideFrom": {
-              "legend": false,
-              "tooltip": false,
-              "viz": false
-            },
-            "insertNulls": false,
-            "lineInterpolation": "linear",
-            "lineWidth": 1,
-            "pointSize": 5,
-            "scaleDistribution": {
-              "type": "linear"
-            },
-            "showPoints": "auto",
-            "spanNulls": false,
-            "stacking": {
-              "group": "A",
-              "mode": "none"
-            },
-            "thresholdsStyle": {
-              "mode": "off"
-            }
-          },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "red",
-                "value": 80
-              }
-            ]
-          },
-          "unit": "s"
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 9,
-        "w": 24,
-        "x": 0,
-        "y": 58
+        "y": 46
       },
       "id": 34,
       "options": {
@@ -1094,192 +1093,10 @@
         "overrides": []
       },
       "gridPos": {
-        "h": 9,
-        "w": 24,
-        "x": 0,
-        "y": 67
-      },
-      "id": 33,
-      "options": {
-        "legend": {
-          "calcs": [],
-          "displayMode": "list",
-          "placement": "bottom",
-          "showLegend": true
-        },
-        "tooltip": {
-          "hideZeros": false,
-          "mode": "single",
-          "sort": "none"
-        }
-      },
-      "pluginVersion": "11.4.0",
-      "targets": [
-        {
-          "editorMode": "code",
-          "expr": "max by (view)(sum by(view,instance) (jmix_ui_views_seconds_max{application=\"$application\", instance=~\"$instance\", view!~\".*Fragment\"}))",
-          "legendFormat": "__auto",
-          "range": true,
-          "refId": "A"
-        }
-      ],
-      "title": "Views Opening Max Time",
-      "type": "timeseries"
-    },
-    {
-      "datasource": "${DS_JMIX_MONITORING}",
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "palette-classic"
-          },
-          "custom": {
-            "axisBorderShow": false,
-            "axisCenteredZero": false,
-            "axisColorMode": "text",
-            "axisLabel": "",
-            "axisPlacement": "auto",
-            "barAlignment": 0,
-            "barWidthFactor": 0.6,
-            "drawStyle": "line",
-            "fillOpacity": 0,
-            "gradientMode": "none",
-            "hideFrom": {
-              "legend": false,
-              "tooltip": false,
-              "viz": false
-            },
-            "insertNulls": false,
-            "lineInterpolation": "linear",
-            "lineWidth": 1,
-            "pointSize": 5,
-            "scaleDistribution": {
-              "type": "linear"
-            },
-            "showPoints": "auto",
-            "spanNulls": false,
-            "stacking": {
-              "group": "A",
-              "mode": "none"
-            },
-            "thresholdsStyle": {
-              "mode": "off"
-            }
-          },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "red",
-                "value": 80
-              }
-            ]
-          },
-          "unit": "s"
-        },
-        "overrides": []
-      },
-      "gridPos": {
         "h": 7,
         "w": 24,
         "x": 0,
-        "y": 76
-      },
-      "id": 25,
-      "options": {
-        "legend": {
-          "calcs": [],
-          "displayMode": "list",
-          "placement": "bottom",
-          "showLegend": true
-        },
-        "tooltip": {
-          "hideZeros": false,
-          "mode": "single",
-          "sort": "none"
-        }
-      },
-      "pluginVersion": "11.4.0",
-      "targets": [
-        {
-          "editorMode": "code",
-          "expr": "max by (view, dataLoader)(jmix_ui_data_seconds_max{application=\"$application\", instance=~\"$instance\",lifeCycle=\"load\"})",
-          "legendFormat": "{{view}}-{{dataLoader}}",
-          "range": true,
-          "refId": "A"
-        }
-      ],
-      "title": "MAX Data Load ",
-      "type": "timeseries"
-    },
-    {
-      "datasource": "${DS_JMIX_MONITORING}",
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "palette-classic"
-          },
-          "custom": {
-            "axisBorderShow": false,
-            "axisCenteredZero": false,
-            "axisColorMode": "text",
-            "axisLabel": "",
-            "axisPlacement": "auto",
-            "barAlignment": 0,
-            "barWidthFactor": 0.6,
-            "drawStyle": "line",
-            "fillOpacity": 0,
-            "gradientMode": "none",
-            "hideFrom": {
-              "legend": false,
-              "tooltip": false,
-              "viz": false
-            },
-            "insertNulls": false,
-            "lineInterpolation": "linear",
-            "lineWidth": 1,
-            "pointSize": 5,
-            "scaleDistribution": {
-              "type": "linear"
-            },
-            "showPoints": "auto",
-            "spanNulls": false,
-            "stacking": {
-              "group": "A",
-              "mode": "none"
-            },
-            "thresholdsStyle": {
-              "mode": "off"
-            }
-          },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "red",
-                "value": 80
-              }
-            ]
-          },
-          "unit": "s"
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 7,
-        "w": 24,
-        "x": 0,
-        "y": 83
+        "y": 55
       },
       "id": 26,
       "options": {
@@ -1309,12 +1126,103 @@
       "type": "timeseries"
     },
     {
+      "datasource": "${DS_JMIX_MONITORING}",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "barWidthFactor": 0.6,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "s"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 24,
+        "x": 0,
+        "y": 62
+      },
+      "id": 25,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "hideZeros": false,
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "11.4.0",
+      "targets": [
+        {
+          "editorMode": "code",
+          "expr": "max by (view, dataLoader)(jmix_ui_data_seconds_max{application=\"$application\", instance=~\"$instance\",lifeCycle=\"load\"})",
+          "legendFormat": "{{view}}-{{dataLoader}}",
+          "range": true,
+          "refId": "A"
+        }
+      ],
+      "title": "MAX Data Load ",
+      "type": "timeseries"
+    },
+    {
       "collapsed": false,
       "gridPos": {
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 90
+        "y": 69
       },
       "id": 7,
       "panels": [],
@@ -1408,7 +1316,7 @@
         "h": 7,
         "w": 24,
         "x": 0,
-        "y": 91
+        "y": 70
       },
       "id": 11,
       "options": {
@@ -1499,7 +1407,7 @@
         "h": 7,
         "w": 24,
         "x": 0,
-        "y": 98
+        "y": 77
       },
       "id": 12,
       "options": {
@@ -1583,8 +1491,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "red",
@@ -1600,7 +1507,7 @@
         "h": 7,
         "w": 24,
         "x": 0,
-        "y": 105
+        "y": 84
       },
       "id": 13,
       "options": {
@@ -1674,8 +1581,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "red",
@@ -1691,7 +1597,7 @@
         "h": 7,
         "w": 24,
         "x": 0,
-        "y": 112
+        "y": 91
       },
       "id": 16,
       "options": {
@@ -1768,8 +1674,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "red",
@@ -1785,7 +1690,7 @@
         "h": 7,
         "w": 24,
         "x": 0,
-        "y": 119
+        "y": 98
       },
       "id": 17,
       "options": {
@@ -1859,8 +1764,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "red",
@@ -1876,7 +1780,7 @@
         "h": 7,
         "w": 24,
         "x": 0,
-        "y": 126
+        "y": 105
       },
       "id": 18,
       "options": {
