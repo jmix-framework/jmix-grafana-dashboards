@@ -42,7 +42,7 @@
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
-  "id": 8,
+  "id": 5,
   "links": [],
   "panels": [
     {
@@ -109,13 +109,13 @@
       "targets": [
         {
           "editorMode": "code",
-          "expr": "max by (instance)(sum by(view, instance) (jmix_ui_views_seconds_max{application=\"$application\", instance=~\"$instance\", view!~\".*Fragment\"}))",
+          "expr": "max by (instance)(sum by(view, instance) (jmix_ui_views_seconds_max{application=\"$application\", instance=~\"$instance\", view!~\".*Fragment\", lifeCycle=~\"beforeShow|create|init|inject|load|ready\"}))",
           "legendFormat": "__auto",
           "range": true,
           "refId": "A"
         }
       ],
-      "title": "View Time(MAX)",
+      "title": "View Openning Time(MAX)",
       "type": "gauge"
     },
     {
@@ -147,6 +147,66 @@
         "h": 5,
         "w": 4,
         "x": 4,
+        "y": 1
+      },
+      "id": 38,
+      "options": {
+        "minVizHeight": 75,
+        "minVizWidth": 75,
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "max"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showThresholdLabels": false,
+        "showThresholdMarkers": true,
+        "sizing": "auto"
+      },
+      "pluginVersion": "11.4.0",
+      "targets": [
+        {
+          "editorMode": "code",
+          "expr": "max by (instance)(sum by(view, instance) (jmix_ui_views_seconds_max{application=\"$application\", instance=~\"$instance\", view!~\".*Fragment\", lifeCycle=~\"afterClose|beforeClose\"}))",
+          "legendFormat": "__auto",
+          "range": true,
+          "refId": "A"
+        }
+      ],
+      "title": "View Closing Time(MAX)",
+      "type": "gauge"
+    },
+    {
+      "datasource": "${DS_JMIX_MONITORING}",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "s"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 5,
+        "w": 4,
+        "x": 8,
         "y": 1
       },
       "id": 22,
@@ -206,7 +266,7 @@
       "gridPos": {
         "h": 5,
         "w": 4,
-        "x": 8,
+        "x": 12,
         "y": 1
       },
       "id": 31,
@@ -466,22 +526,42 @@
         {
           "datasource": "${DS_JMIX_MONITORING}",
           "editorMode": "code",
-          "expr": "sum (rate(jmix_ui_views_seconds_sum{application=\"$application\", instance=~\"$instance\"}[5m]))/sum (rate(jmix_ui_views_seconds_count{application=\"$application\", instance=~\"$instance\", lifeCycle=\"beforeShow\"}[5m])) ",
+          "expr": "sum (rate(jmix_ui_views_seconds_sum{application=\"$application\", instance=~\"$instance\", lifeCycle=~\"beforeShow|create|init|inject|load|ready\"}[5m]))/sum (rate(jmix_ui_views_seconds_count{application=\"$application\", instance=~\"$instance\", lifeCycle=\"beforeShow\"}[5m])) ",
           "hide": false,
           "instant": false,
-          "legendFormat": "Jmix Views - AVG",
+          "legendFormat": "Jmix Openinig Views - AVG",
           "range": true,
           "refId": "C"
         },
         {
           "datasource": "${DS_JMIX_MONITORING}",
           "editorMode": "code",
-          "expr": "max(sum by (screen) (jmix_ui_views_seconds_max{application=\"$application\"}))",
+          "expr": "max(sum by (screen) (jmix_ui_views_seconds_max{application=\"$application\", lifeCycle=~\"beforeShow|create|init|inject|load|ready\"}))",
           "hide": false,
           "instant": false,
-          "legendFormat": "Jmix Views - MAX",
+          "legendFormat": "Jmix Opening Views - MAX",
           "range": true,
           "refId": "D"
+        },
+        {
+          "datasource": "${DS_JMIX_MONITORING}",
+          "editorMode": "code",
+          "expr": "sum (rate(jmix_ui_views_seconds_sum{application=\"$application\", instance=~\"$instance\", lifeCycle=~\"afterClose|beforeClose\"}[5m]))/sum (rate(jmix_ui_views_seconds_count{application=\"$application\", instance=~\"$instance\", lifeCycle=\"afterClose\"}[5m])) ",
+          "hide": false,
+          "instant": false,
+          "legendFormat": "Jmix Closing Views - AVG",
+          "range": true,
+          "refId": "E"
+        },
+        {
+          "datasource": "${DS_JMIX_MONITORING}",
+          "editorMode": "code",
+          "expr": "max(sum by (screen) (jmix_ui_views_seconds_max{application=\"$application\", lifeCycle=~\"afterClose|beforeClose\"}))",
+          "hide": false,
+          "instant": false,
+          "legendFormat": "Jmix Closing Views - MAX",
+          "range": true,
+          "refId": "F"
         }
       ],
       "title": "Duration",
@@ -1872,8 +1952,8 @@
       },
       {
         "current": {
-          "text": "petclinic_Pet.list",
-          "value": "petclinic_Pet.list"
+          "text": "",
+          "value": ""
         },
         "datasource": "${DS_JMIX_MONITORING}",
         "definition": "label_values(jmix_ui_views_seconds_max{application=\"$application\", instance=~\"$instance\"},view)",
