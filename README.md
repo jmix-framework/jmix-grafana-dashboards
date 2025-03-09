@@ -50,7 +50,7 @@ This tag will be added to all metrics that are exported with your application. A
 
 <img src="images/applications_list.png" alt="Applications list"/>
 
-More details about the <b>Spring Boot common tags</b> you can find by the link <a href="https://docs.spring.io/spring-boot/reference/actuator/metrics.html#actuator.metrics.customizing.common-tags">link</a>.
+More details about the <b>Spring Boot common tags</b> you can find by the <a href="https://docs.spring.io/spring-boot/reference/actuator/metrics.html#actuator.metrics.customizing.common-tags">link</a>.
 
 <h2>Percentiles and Histograms</h2>
 
@@ -62,7 +62,7 @@ management.metrics.distribution.percentiles.jmix = 0.50,0.95,0.99,0.999
 ```
 Note that in order to visualize such additional metrics you should create your own visualisation in your Grafana.
 
-More details about the <b>Spring Boot per-meter properties</b> you can find by the link <a href="https://docs.spring.io/spring-boot/reference/actuator/metrics.html#actuator.metrics.customizing.per-meter-properties">link</a>. 
+More details about the <b>Spring Boot per-meter properties</b> you can find by the <a href="https://docs.spring.io/spring-boot/reference/actuator/metrics.html#actuator.metrics.customizing.per-meter-properties">link</a>. 
 
 
 
