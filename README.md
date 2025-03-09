@@ -11,7 +11,7 @@ There are two dashboards:
 </ul>
 <img src="images/jmix_dashboard.png" alt="Jmix Dashboard"/>
 
-<h2>Base settings</h2>
+<h2>Base Prometheus Micrometer Settings for Jmix Application</h2>
 
 Add the following libraries:
 ```
@@ -50,7 +50,7 @@ This tag will be added to all metrics that are exported with your application. A
 
 More details about the Spring Boot common tags you can find by the link <a href="https://docs.spring.io/spring-boot/reference/actuator/metrics.html#actuator.metrics.customizing.common-tags">link</a>.
 
-<h2>Percentiles and histograms</h2>
+<h2>Percentiles and Histograms</h2>
 
 In addition to standard set of "Rate/Average Duration/Maximum Duration" metrics you can export percentiles metrics(such as "0.50", "0.99") with the specific Spring Boot properties.
 For example the following property will add percentile metrics for all Jmix metrics.
