@@ -41,12 +41,14 @@ public class ActuatorSecurityConfiguration {
 More details about Jmix applications monitoring you can find by the <a href="https://habr.com/ru/companies/haulmont/articles/825402/">link</a>. 
 
 <h2>Application Name and Other Common Tags</h2>
-In order to use Application name on the dashboards(especially if you have more than one application) the following application property should be added
+In order to see the application name on the dashboards(especially if you have more than one application) the following application property should be added
 
 ```
 management.metrics.tags.application = <YourApplicationName>
 ```
-This tag will be added to all metrics that are exported with your application. Also, you can add your own common tags if you need. 
+This tag will be added to all metrics that are exported with your application. Also, you can add your own common tags if you need.
+
+<img src="images/applications_list.png" alt="Applications list"/>
 
 More details about the Spring Boot common tags you can find by the link <a href="https://docs.spring.io/spring-boot/reference/actuator/metrics.html#actuator.metrics.customizing.common-tags">link</a>.
 
