@@ -38,7 +38,7 @@ public class ActuatorSecurityConfiguration {
 }
 ```
 
-More details about Jmix applications monitoring you can find by the <a href="https://habr.com/ru/companies/haulmont/articles/825402/">link</a>. 
+More details about Jmix applications monitoring you can find <a href="https://habr.com/ru/companies/haulmont/articles/825402/">here</a>. 
 
 <h2>Application Name and Other Common Tags</h2>
 In order to see the application name on the dashboards(especially if you have more than one application) the following application property should be added
@@ -50,7 +50,7 @@ This tag will be added to all metrics that are exported with your application. A
 
 <img src="images/applications_list.png" alt="Applications list"/>
 
-More details about the <b>Spring Boot common tags</b> you can find by the <a href="https://docs.spring.io/spring-boot/reference/actuator/metrics.html#actuator.metrics.customizing.common-tags">link</a>.
+More details about the <b>Spring Boot common tags</b> you can find <a href="https://docs.spring.io/spring-boot/reference/actuator/metrics.html#actuator.metrics.customizing.common-tags">here</a>.
 
 <h2>Percentiles and Histograms</h2>
 
@@ -62,7 +62,7 @@ management.metrics.distribution.percentiles.jmix = 0.50,0.95,0.99,0.999
 ```
 Note that in order to visualize such additional metrics you should create your own visualisation in your Grafana.
 
-More details about the <b>Spring Boot per-meter properties</b> you can find by the <a href="https://docs.spring.io/spring-boot/reference/actuator/metrics.html#actuator.metrics.customizing.per-meter-properties">link</a>. 
+More details about the <b>Spring Boot per-meter properties</b> you can find <a href="https://docs.spring.io/spring-boot/reference/actuator/metrics.html#actuator.metrics.customizing.per-meter-properties">here</a>. 
 
 
 
