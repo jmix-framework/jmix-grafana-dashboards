@@ -38,8 +38,6 @@ public class ActuatorSecurityConfiguration {
 }
 ```
 
-More details about Jmix applications monitoring you can find <a href="https://habr.com/ru/companies/haulmont/articles/825402/">here</a>. 
-
 <h2>Application Name and Other Common Tags</h2>
 In order to see the application name on the dashboards (especially if you have more than one application), the following application property should be added.
 
