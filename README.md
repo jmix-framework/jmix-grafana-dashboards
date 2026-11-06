@@ -14,9 +14,9 @@ There are three dashboards:
 
 <h2>Jmix 3 Monitoring</h2>
 
-The <code>Jmix 3 Monitoring.json</code> dashboard shows the following Jmix 3 metrics: view opening, data loaders, fragments, UI actions, <code>DataManager</code> loads and saves. It also shows active HTTP sessions, the database connection pool, HTTP requests and the JVM. Durations are shown as average and maximum values, so the dashboard does not require percentiles or histograms. The maximum is the longest single operation in the last few minutes (the Micrometer timer max); it shows rare slow operations that the average hides.
+The <code>Jmix 3 Monitoring.json</code> dashboard shows the following Jmix 3 metrics: view opening and closing, data loaders and their stages, fragments, UI actions, <code>DataManager</code> loads and saves. It also shows active HTTP sessions, the database connection pool, HTTP requests and the JVM. Durations are shown as average and maximum values, so the dashboard does not require percentiles or histograms. The maximum is the longest single operation in the last few minutes (the Micrometer timer max); it shows rare slow operations that the average hides.
 
-The dashboard can be filtered by application, instance, view and entity. It deliberately shows more panels than every application needs: remove the panels you do not use in the dashboard edit mode, or collapse a whole row.
+The dashboard can be filtered by application, instance, view, data loader and entity. It deliberately shows more panels than every application needs: remove the panels you do not use in the dashboard edit mode, or collapse a whole row.
 
 The <b>Operations in progress</b> row is based on long task timers, which Micrometer creates for every observation. It shows how many operations have started and not yet finished, and how long the longest of them has been running. An operation that hangs appears there before it completes. If long task timers are disabled with <code>management.metrics.observations.ignored-meters = long-task-timer</code>, the row stays empty.
 

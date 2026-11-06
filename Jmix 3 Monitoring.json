@@ -153,6 +153,28 @@
         "allValue": ".*"
       },
       {
+        "name": "loader",
+        "label": "Data loader",
+        "type": "query",
+        "datasource": {
+          "type": "prometheus",
+          "uid": "${datasource}"
+        },
+        "refresh": 2,
+        "includeAll": true,
+        "multi": true,
+        "current": {
+          "text": "All",
+          "value": "$__all"
+        },
+        "query": {
+          "query": "label_values(jmix_ui_data_seconds_count{application=~\"$app\", view_id=~\"$view\"}, loader_id)",
+          "refId": "loader"
+        },
+        "definition": "label_values(jmix_ui_data_seconds_count{application=~\"$app\", view_id=~\"$view\"}, loader_id)",
+        "allValue": ".*"
+      },
+      {
         "name": "entity",
         "label": "Entity",
         "type": "query",
@@ -193,7 +215,7 @@
     {
       "id": 2,
       "type": "stat",
-      "title": "View opens per min",
+      "title": "View open rate",
       "datasource": {
         "type": "prometheus",
         "uid": "${datasource}"
@@ -201,7 +223,7 @@
       "gridPos": {
         "x": 0,
         "y": 1,
-        "w": 6,
+        "w": 5,
         "h": 4
       },
       "targets": [
@@ -217,7 +239,7 @@
       ],
       "fieldConfig": {
         "defaults": {
-          "unit": "none",
+          "unit": "opm",
           "decimals": 1,
           "color": {
             "mode": "thresholds"
@@ -246,7 +268,8 @@
         "graphMode": "area",
         "textMode": "value",
         "justifyMode": "center"
-      }
+      },
+      "description": "Counted by the ready stage. A layout view such as MainView gets ready on every navigation, not only when it is created"
     },
     {
       "id": 3,
@@ -257,9 +280,9 @@
         "uid": "${datasource}"
       },
       "gridPos": {
-        "x": 6,
+        "x": 5,
         "y": 1,
-        "w": 6,
+        "w": 5,
         "h": 4
       },
       "targets": [
@@ -309,15 +332,15 @@
     {
       "id": 4,
       "type": "stat",
-      "title": "DataManager operations",
+      "title": "DataManager operation rate",
       "datasource": {
         "type": "prometheus",
         "uid": "${datasource}"
       },
       "gridPos": {
-        "x": 12,
+        "x": 10,
         "y": 1,
-        "w": 6,
+        "w": 5,
         "h": 4
       },
       "targets": [
@@ -368,15 +391,15 @@
     {
       "id": 5,
       "type": "stat",
-      "title": "HTTP 5xx per min",
+      "title": "HTTP 5xx rate",
       "datasource": {
         "type": "prometheus",
         "uid": "${datasource}"
       },
       "gridPos": {
-        "x": 18,
+        "x": 15,
         "y": 1,
-        "w": 6,
+        "w": 5,
         "h": 4
       },
       "targets": [
@@ -392,7 +415,7 @@
       ],
       "fieldConfig": {
         "defaults": {
-          "unit": "none",
+          "unit": "reqpm",
           "decimals": 1,
           "color": {
             "mode": "thresholds"
@@ -430,7 +453,70 @@
     {
       "id": 6,
       "type": "stat",
-      "title": "View open time",
+      "title": "Jmix error rate",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
+      "gridPos": {
+        "x": 20,
+        "y": 1,
+        "w": 4,
+        "h": 4
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "expr": "(sum(rate({__name__=~\"jmix_.+_seconds_count\", application=~\"$app\", instance=~\"$instance\", error!=\"none\", error!=\"\"}[$__rate_interval])) or vector(0)) * 60",
+          "legendFormat": ""
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "opm",
+          "decimals": 1,
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 0.1
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "colorMode": "background",
+        "graphMode": "area",
+        "textMode": "value",
+        "justifyMode": "center"
+      },
+      "description": "Jmix operations that ended with an exception (error tag)"
+    },
+    {
+      "id": 7,
+      "type": "stat",
+      "title": "View open average time",
       "datasource": {
         "type": "prometheus",
         "uid": "${datasource}"
@@ -448,7 +534,7 @@
             "type": "prometheus",
             "uid": "${datasource}"
           },
-          "expr": "sum (rate(jmix_ui_views_seconds_sum{application=~\"$app\", instance=~\"$instance\", lifecycle_name=~\"create|load|inject|init|beforeShow|ready\"}[$__rate_interval])) / sum (rate(jmix_ui_views_seconds_count{application=~\"$app\", instance=~\"$instance\", lifecycle_name=\"ready\"}[$__rate_interval]))",
+          "expr": "sum ((sum by (lifecycle_name) (rate(jmix_ui_views_seconds_sum{application=~\"$app\", instance=~\"$instance\", lifecycle_name=~\"create|load|inject|init|beforeShow|ready\"}[$__rate_interval])) / sum by (lifecycle_name) (rate(jmix_ui_views_seconds_count{application=~\"$app\", instance=~\"$instance\", lifecycle_name=~\"create|load|inject|init|beforeShow|ready\"}[$__rate_interval]))) >= 0)",
           "legendFormat": ""
         }
       ],
@@ -491,18 +577,84 @@
         "textMode": "value",
         "justifyMode": "center"
       },
-      "description": "Average view open time: total time of all opening stages divided by the number of opens"
+      "description": "Sum of the average times of the opening stages, each averaged over its own number of calls"
     },
     {
-      "id": 7,
+      "id": 8,
       "type": "stat",
-      "title": "View data loading",
+      "title": "View close max time",
       "datasource": {
         "type": "prometheus",
         "uid": "${datasource}"
       },
       "gridPos": {
         "x": 6,
+        "y": 5,
+        "w": 6,
+        "h": 4
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "expr": "max (jmix_ui_views_seconds_max{application=~\"$app\", instance=~\"$instance\", lifecycle_name=~\"beforeClose|afterClose\"})",
+          "legendFormat": ""
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "s",
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "orange",
+                "value": 0.5
+              },
+              {
+                "color": "red",
+                "value": 1
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "colorMode": "background",
+        "graphMode": "area",
+        "textMode": "value",
+        "justifyMode": "center"
+      },
+      "description": "Longest closing stage (beforeClose or afterClose) in the last minutes (Timer max)"
+    },
+    {
+      "id": 9,
+      "type": "stat",
+      "title": "Data loader average time",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
+      "gridPos": {
+        "x": 12,
         "y": 5,
         "w": 6,
         "h": 4
@@ -557,18 +709,18 @@
         "textMode": "value",
         "justifyMode": "center"
       },
-      "description": "Average data loading time of view data loaders"
+      "description": "Average load time of view data loaders"
     },
     {
-      "id": 8,
+      "id": 10,
       "type": "stat",
-      "title": "Max data loading",
+      "title": "Data loader max time",
       "datasource": {
         "type": "prometheus",
         "uid": "${datasource}"
       },
       "gridPos": {
-        "x": 12,
+        "x": 18,
         "y": 5,
         "w": 6,
         "h": 4
@@ -580,7 +732,7 @@
             "type": "prometheus",
             "uid": "${datasource}"
           },
-          "expr": "max(jmix_ui_data_seconds_max{application=~\"$app\", instance=~\"$instance\", lifecycle_name=\"load\"})",
+          "expr": "max (jmix_ui_data_seconds_max{application=~\"$app\", instance=~\"$instance\", lifecycle_name=\"load\"})",
           "legendFormat": ""
         }
       ],
@@ -623,73 +775,10 @@
         "textMode": "value",
         "justifyMode": "center"
       },
-      "description": "Longest single data load of a view data loader in the last minutes (Timer max)"
+      "description": "Longest single load of a view data loader in the last minutes (Timer max)"
     },
     {
-      "id": 9,
-      "type": "stat",
-      "title": "Jmix errors per min",
-      "datasource": {
-        "type": "prometheus",
-        "uid": "${datasource}"
-      },
-      "gridPos": {
-        "x": 18,
-        "y": 5,
-        "w": 6,
-        "h": 4
-      },
-      "targets": [
-        {
-          "refId": "A",
-          "datasource": {
-            "type": "prometheus",
-            "uid": "${datasource}"
-          },
-          "expr": "(sum(rate({__name__=~\"jmix_.+_seconds_count\", application=~\"$app\", instance=~\"$instance\", error!=\"none\", error!=\"\"}[$__rate_interval])) or vector(0)) * 60",
-          "legendFormat": ""
-        }
-      ],
-      "fieldConfig": {
-        "defaults": {
-          "unit": "none",
-          "decimals": 1,
-          "color": {
-            "mode": "thresholds"
-          },
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "red",
-                "value": 0.1
-              }
-            ]
-          }
-        },
-        "overrides": []
-      },
-      "options": {
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
-          "fields": "",
-          "values": false
-        },
-        "colorMode": "background",
-        "graphMode": "area",
-        "textMode": "value",
-        "justifyMode": "center"
-      },
-      "description": "Jmix operations that ended with an exception (error tag)"
-    },
-    {
-      "id": 10,
+      "id": 11,
       "type": "row",
       "title": "Views",
       "collapsed": false,
@@ -702,9 +791,9 @@
       "panels": []
     },
     {
-      "id": 11,
+      "id": 12,
       "type": "timeseries",
-      "title": "Opens per minute by view",
+      "title": "View open rate",
       "datasource": {
         "type": "prometheus",
         "uid": "${datasource}"
@@ -728,7 +817,7 @@
       ],
       "fieldConfig": {
         "defaults": {
-          "unit": "none",
+          "unit": "opm",
           "custom": {
             "lineWidth": 2,
             "fillOpacity": 10,
@@ -756,12 +845,13 @@
           "mode": "multi",
           "sort": "desc"
         }
-      }
+      },
+      "description": "Counted by the ready stage. A layout view such as MainView gets ready on every navigation, not only when it is created"
     },
     {
-      "id": 12,
+      "id": 13,
       "type": "timeseries",
-      "title": "Average open time by view",
+      "title": "View open average time",
       "datasource": {
         "type": "prometheus",
         "uid": "${datasource}"
@@ -779,7 +869,7 @@
             "type": "prometheus",
             "uid": "${datasource}"
           },
-          "expr": "sum by (view_id) (rate(jmix_ui_views_seconds_sum{application=~\"$app\", instance=~\"$instance\", lifecycle_name=~\"create|load|inject|init|beforeShow|ready\", view_id=~\"$view\"}[$__rate_interval])) / sum by (view_id) (rate(jmix_ui_views_seconds_count{application=~\"$app\", instance=~\"$instance\", lifecycle_name=\"ready\", view_id=~\"$view\"}[$__rate_interval]))",
+          "expr": "sum by (view_id) ((sum by (view_id, lifecycle_name) (rate(jmix_ui_views_seconds_sum{application=~\"$app\", instance=~\"$instance\", lifecycle_name=~\"create|load|inject|init|beforeShow|ready\", view_id=~\"$view\"}[$__rate_interval])) / sum by (view_id, lifecycle_name) (rate(jmix_ui_views_seconds_count{application=~\"$app\", instance=~\"$instance\", lifecycle_name=~\"create|load|inject|init|beforeShow|ready\", view_id=~\"$view\"}[$__rate_interval]))) >= 0)",
           "legendFormat": "{{view_id}}"
         }
       ],
@@ -813,12 +903,13 @@
           "mode": "multi",
           "sort": "desc"
         }
-      }
+      },
+      "description": "Sum of the average times of the opening stages, each averaged over its own number of calls"
     },
     {
-      "id": 13,
+      "id": 14,
       "type": "timeseries",
-      "title": "Average lifecycle stage time",
+      "title": "View stage average time",
       "datasource": {
         "type": "prometheus",
         "uid": "${datasource}"
@@ -836,7 +927,7 @@
             "type": "prometheus",
             "uid": "${datasource}"
           },
-          "expr": "sum by (lifecycle_name) (rate(jmix_ui_views_seconds_sum{application=~\"$app\", instance=~\"$instance\", lifecycle_name=~\"create|load|inject|init|beforeShow|ready\", view_id=~\"$view\"}[$__rate_interval])) / sum by (lifecycle_name) (rate(jmix_ui_views_seconds_count{application=~\"$app\", instance=~\"$instance\", lifecycle_name=~\"create|load|inject|init|beforeShow|ready\", view_id=~\"$view\"}[$__rate_interval]))",
+          "expr": "(sum by (lifecycle_name) (rate(jmix_ui_views_seconds_sum{application=~\"$app\", instance=~\"$instance\", lifecycle_name=~\"create|load|inject|init|beforeShow|ready\", view_id=~\"$view\"}[$__rate_interval])) / sum by (lifecycle_name) (rate(jmix_ui_views_seconds_count{application=~\"$app\", instance=~\"$instance\", lifecycle_name=~\"create|load|inject|init|beforeShow|ready\", view_id=~\"$view\"}[$__rate_interval]))) >= 0",
           "legendFormat": "{{lifecycle_name}}"
         }
       ],
@@ -871,12 +962,12 @@
           "sort": "desc"
         }
       },
-      "description": "The sum of the stages is the view open time"
+      "description": "Opening stages. The sum of the stages is the view open time"
     },
     {
-      "id": 14,
+      "id": 15,
       "type": "timeseries",
-      "title": "Max opening stage time by view",
+      "title": "View open max time",
       "datasource": {
         "type": "prometheus",
         "uid": "${datasource}"
@@ -929,12 +1020,12 @@
           "sort": "desc"
         }
       },
-      "description": "Timer max: the longest single operation in the last minutes. Shows rare slow operations that the average hides"
+      "description": "Longest opening stage of each view. Timer max: the longest single operation in the last minutes. Shows rare slow operations that the average hides"
     },
     {
-      "id": 15,
+      "id": 16,
       "type": "timeseries",
-      "title": "Max time by lifecycle stage",
+      "title": "View stage max time",
       "datasource": {
         "type": "prometheus",
         "uid": "${datasource}"
@@ -990,9 +1081,9 @@
       "description": "Timer max: the longest single operation in the last minutes. Shows rare slow operations that the average hides"
     },
     {
-      "id": 16,
+      "id": 17,
       "type": "bargauge",
-      "title": "Views with the highest average open time",
+      "title": "Views with the highest open average time",
       "datasource": {
         "type": "prometheus",
         "uid": "${datasource}"
@@ -1010,7 +1101,7 @@
             "type": "prometheus",
             "uid": "${datasource}"
           },
-          "expr": "topk(10, sum by (view_id) (rate(jmix_ui_views_seconds_sum{application=~\"$app\", instance=~\"$instance\", lifecycle_name=~\"create|load|inject|init|beforeShow|ready\"}[$__rate_interval])) / sum by (view_id) (rate(jmix_ui_views_seconds_count{application=~\"$app\", instance=~\"$instance\", lifecycle_name=\"ready\"}[$__rate_interval])))",
+          "expr": "topk(10, sum by (view_id) ((sum by (view_id, lifecycle_name) (rate(jmix_ui_views_seconds_sum{application=~\"$app\", instance=~\"$instance\", lifecycle_name=~\"create|load|inject|init|beforeShow|ready\"}[$__rate_interval])) / sum by (view_id, lifecycle_name) (rate(jmix_ui_views_seconds_count{application=~\"$app\", instance=~\"$instance\", lifecycle_name=~\"create|load|inject|init|beforeShow|ready\"}[$__rate_interval]))) >= 0))",
           "legendFormat": "{{view_id}}",
           "instant": true,
           "range": false
@@ -1038,32 +1129,20 @@
           ],
           "values": false
         }
-      }
-    },
-    {
-      "id": 17,
-      "type": "row",
-      "title": "Data loaders",
-      "collapsed": false,
-      "gridPos": {
-        "x": 0,
-        "y": 34,
-        "w": 24,
-        "h": 1
       },
-      "panels": []
+      "description": "Sum of the average times of the opening stages, each averaged over its own number of calls"
     },
     {
       "id": 18,
       "type": "timeseries",
-      "title": "Average load time by data loader",
+      "title": "View close average time",
       "datasource": {
         "type": "prometheus",
         "uid": "${datasource}"
       },
       "gridPos": {
         "x": 0,
-        "y": 35,
+        "y": 34,
         "w": 12,
         "h": 8
       },
@@ -1074,7 +1153,136 @@
             "type": "prometheus",
             "uid": "${datasource}"
           },
-          "expr": "sum by (view_id, loader_id) (rate(jmix_ui_data_seconds_sum{application=~\"$app\", instance=~\"$instance\", lifecycle_name=\"load\", view_id=~\"$view\"}[$__rate_interval])) / sum by (view_id, loader_id) (rate(jmix_ui_data_seconds_count{application=~\"$app\", instance=~\"$instance\", lifecycle_name=\"load\", view_id=~\"$view\"}[$__rate_interval]))",
+          "expr": "sum by (view_id) ((sum by (view_id, lifecycle_name) (rate(jmix_ui_views_seconds_sum{application=~\"$app\", instance=~\"$instance\", lifecycle_name=~\"beforeClose|afterClose\", view_id=~\"$view\"}[$__rate_interval])) / sum by (view_id, lifecycle_name) (rate(jmix_ui_views_seconds_count{application=~\"$app\", instance=~\"$instance\", lifecycle_name=~\"beforeClose|afterClose\", view_id=~\"$view\"}[$__rate_interval]))) >= 0)",
+          "legendFormat": "{{view_id}}"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "s",
+          "custom": {
+            "lineWidth": 2,
+            "fillOpacity": 10,
+            "showPoints": "never",
+            "pointSize": 6,
+            "stacking": {
+              "mode": "none"
+            }
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "right",
+          "calcs": [
+            "mean",
+            "max"
+          ],
+          "sortBy": "Max",
+          "sortDesc": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "description": "Sum of the average times of the beforeClose and afterClose stages. Long closing usually means work in BeforeCloseEvent handlers, for example a check of unsaved changes"
+    },
+    {
+      "id": 19,
+      "type": "timeseries",
+      "title": "View close max time",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
+      "gridPos": {
+        "x": 12,
+        "y": 34,
+        "w": 12,
+        "h": 8
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "expr": "max by (view_id) (jmix_ui_views_seconds_max{application=~\"$app\", instance=~\"$instance\", lifecycle_name=~\"beforeClose|afterClose\", view_id=~\"$view\"})",
+          "legendFormat": "{{view_id}}"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "s",
+          "custom": {
+            "lineWidth": 2,
+            "fillOpacity": 10,
+            "showPoints": "never",
+            "pointSize": 6,
+            "stacking": {
+              "mode": "none"
+            }
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "right",
+          "calcs": [
+            "mean",
+            "max"
+          ],
+          "sortBy": "Max",
+          "sortDesc": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "description": "Longest closing stage of each view. Timer max: the longest single operation in the last minutes. Shows rare slow operations that the average hides"
+    },
+    {
+      "id": 20,
+      "type": "row",
+      "title": "Data loaders",
+      "collapsed": false,
+      "gridPos": {
+        "x": 0,
+        "y": 42,
+        "w": 24,
+        "h": 1
+      },
+      "panels": []
+    },
+    {
+      "id": 21,
+      "type": "timeseries",
+      "title": "Data loader average time",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 43,
+        "w": 12,
+        "h": 8
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "expr": "sum by (view_id, loader_id) (rate(jmix_ui_data_seconds_sum{application=~\"$app\", instance=~\"$instance\", lifecycle_name=\"load\", view_id=~\"$view\", loader_id=~\"$loader\"}[$__rate_interval])) / sum by (view_id, loader_id) (rate(jmix_ui_data_seconds_count{application=~\"$app\", instance=~\"$instance\", lifecycle_name=\"load\", view_id=~\"$view\", loader_id=~\"$loader\"}[$__rate_interval]))",
           "legendFormat": "{{view_id}} / {{loader_id}}"
         }
       ],
@@ -1111,16 +1319,16 @@
       }
     },
     {
-      "id": 19,
+      "id": 22,
       "type": "timeseries",
-      "title": "Max load time by data loader",
+      "title": "Data loader max time",
       "datasource": {
         "type": "prometheus",
         "uid": "${datasource}"
       },
       "gridPos": {
         "x": 12,
-        "y": 35,
+        "y": 43,
         "w": 12,
         "h": 8
       },
@@ -1131,7 +1339,7 @@
             "type": "prometheus",
             "uid": "${datasource}"
           },
-          "expr": "max by (view_id, loader_id) (jmix_ui_data_seconds_max{application=~\"$app\", instance=~\"$instance\", lifecycle_name=\"load\", view_id=~\"$view\"})",
+          "expr": "max by (view_id, loader_id) (jmix_ui_data_seconds_max{application=~\"$app\", instance=~\"$instance\", lifecycle_name=\"load\", view_id=~\"$view\", loader_id=~\"$loader\"})",
           "legendFormat": "{{view_id}} / {{loader_id}}"
         }
       ],
@@ -1169,16 +1377,16 @@
       "description": "Timer max: the longest single operation in the last minutes. Shows rare slow operations that the average hides"
     },
     {
-      "id": 20,
+      "id": 23,
       "type": "timeseries",
-      "title": "Loads per minute by data loader",
+      "title": "Data loader rate",
       "datasource": {
         "type": "prometheus",
         "uid": "${datasource}"
       },
       "gridPos": {
         "x": 0,
-        "y": 43,
+        "y": 51,
         "w": 12,
         "h": 8
       },
@@ -1189,13 +1397,13 @@
             "type": "prometheus",
             "uid": "${datasource}"
           },
-          "expr": "sum by (view_id, loader_id) (rate(jmix_ui_data_seconds_count{application=~\"$app\", instance=~\"$instance\", lifecycle_name=\"load\", view_id=~\"$view\"}[$__rate_interval])) * 60",
+          "expr": "sum by (view_id, loader_id) (rate(jmix_ui_data_seconds_count{application=~\"$app\", instance=~\"$instance\", lifecycle_name=\"load\", view_id=~\"$view\", loader_id=~\"$loader\"}[$__rate_interval])) * 60",
           "legendFormat": "{{view_id}} / {{loader_id}}"
         }
       ],
       "fieldConfig": {
         "defaults": {
-          "unit": "none",
+          "unit": "opm",
           "custom": {
             "lineWidth": 2,
             "fillOpacity": 10,
@@ -1226,16 +1434,16 @@
       }
     },
     {
-      "id": 21,
+      "id": 24,
       "type": "bargauge",
-      "title": "Data loaders with the highest average load time",
+      "title": "Data loaders with the highest average time",
       "datasource": {
         "type": "prometheus",
         "uid": "${datasource}"
       },
       "gridPos": {
         "x": 12,
-        "y": 43,
+        "y": 51,
         "w": 12,
         "h": 8
       },
@@ -1246,7 +1454,7 @@
             "type": "prometheus",
             "uid": "${datasource}"
           },
-          "expr": "topk(10, sum by (view_id, loader_id) (rate(jmix_ui_data_seconds_sum{application=~\"$app\", instance=~\"$instance\", lifecycle_name=\"load\"}[$__rate_interval])) / sum by (view_id, loader_id) (rate(jmix_ui_data_seconds_count{application=~\"$app\", instance=~\"$instance\", lifecycle_name=\"load\"}[$__rate_interval])))",
+          "expr": "topk(10, sum by (view_id, loader_id) (rate(jmix_ui_data_seconds_sum{application=~\"$app\", instance=~\"$instance\", lifecycle_name=\"load\", view_id=~\"$view\", loader_id=~\"$loader\"}[$__rate_interval])) / sum by (view_id, loader_id) (rate(jmix_ui_data_seconds_count{application=~\"$app\", instance=~\"$instance\", lifecycle_name=\"load\", view_id=~\"$view\", loader_id=~\"$loader\"}[$__rate_interval])))",
           "legendFormat": "{{view_id}} / {{loader_id}}",
           "instant": true,
           "range": false
@@ -1277,29 +1485,145 @@
       }
     },
     {
-      "id": 22,
-      "type": "row",
-      "title": "Fragments",
-      "collapsed": false,
-      "gridPos": {
-        "x": 0,
-        "y": 51,
-        "w": 24,
-        "h": 1
-      },
-      "panels": []
-    },
-    {
-      "id": 23,
+      "id": 25,
       "type": "timeseries",
-      "title": "Average fragment stage time",
+      "title": "Data loader stage average time",
       "datasource": {
         "type": "prometheus",
         "uid": "${datasource}"
       },
       "gridPos": {
         "x": 0,
-        "y": 52,
+        "y": 59,
+        "w": 12,
+        "h": 8
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "expr": "sum by (view_id, loader_id, lifecycle_name) (rate(jmix_ui_data_seconds_sum{application=~\"$app\", instance=~\"$instance\", view_id=~\"$view\", loader_id=~\"$loader\"}[$__rate_interval])) / sum by (view_id, loader_id, lifecycle_name) (rate(jmix_ui_data_seconds_count{application=~\"$app\", instance=~\"$instance\", view_id=~\"$view\", loader_id=~\"$loader\"}[$__rate_interval]))",
+          "legendFormat": "{{view_id}} / {{loader_id}} {{lifecycle_name}}"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "s",
+          "custom": {
+            "lineWidth": 2,
+            "fillOpacity": 10,
+            "showPoints": "never",
+            "pointSize": 6,
+            "stacking": {
+              "mode": "none"
+            }
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "right",
+          "calcs": [
+            "mean",
+            "max"
+          ],
+          "sortBy": "Max",
+          "sortDesc": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "description": "preLoad and postLoad are the PreLoadEvent and PostLoadEvent handlers of the application, load is the loading itself"
+    },
+    {
+      "id": 26,
+      "type": "timeseries",
+      "title": "Data loader stage max time",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
+      "gridPos": {
+        "x": 12,
+        "y": 59,
+        "w": 12,
+        "h": 8
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "expr": "max by (view_id, loader_id, lifecycle_name) (jmix_ui_data_seconds_max{application=~\"$app\", instance=~\"$instance\", view_id=~\"$view\", loader_id=~\"$loader\"})",
+          "legendFormat": "{{view_id}} / {{loader_id}} {{lifecycle_name}}"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "s",
+          "custom": {
+            "lineWidth": 2,
+            "fillOpacity": 10,
+            "showPoints": "never",
+            "pointSize": 6,
+            "stacking": {
+              "mode": "none"
+            }
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "right",
+          "calcs": [
+            "mean",
+            "max"
+          ],
+          "sortBy": "Max",
+          "sortDesc": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "description": "Timer max: the longest single operation in the last minutes. Shows rare slow operations that the average hides"
+    },
+    {
+      "id": 27,
+      "type": "row",
+      "title": "Fragments",
+      "collapsed": false,
+      "gridPos": {
+        "x": 0,
+        "y": 67,
+        "w": 24,
+        "h": 1
+      },
+      "panels": []
+    },
+    {
+      "id": 28,
+      "type": "timeseries",
+      "title": "Fragment stage average time",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 68,
         "w": 12,
         "h": 8
       },
@@ -1344,19 +1668,20 @@
           "mode": "multi",
           "sort": "desc"
         }
-      }
+      },
+      "description": "The ready stage has no view ID (N/A), so the View filter does not narrow it down"
     },
     {
-      "id": 24,
+      "id": 29,
       "type": "timeseries",
-      "title": "Max fragment stage time",
+      "title": "Fragment stage max time",
       "datasource": {
         "type": "prometheus",
         "uid": "${datasource}"
       },
       "gridPos": {
         "x": 12,
-        "y": 52,
+        "y": 68,
         "w": 12,
         "h": 8
       },
@@ -1402,32 +1727,32 @@
           "sort": "desc"
         }
       },
-      "description": "Timer max: the longest single operation in the last minutes. Shows rare slow operations that the average hides"
+      "description": "Timer max: the longest single operation in the last minutes. Shows rare slow operations that the average hides. The ready stage has no view ID (N/A), so the View filter does not narrow it down"
     },
     {
-      "id": 25,
+      "id": 30,
       "type": "row",
       "title": "Actions",
       "collapsed": false,
       "gridPos": {
         "x": 0,
-        "y": 60,
+        "y": 76,
         "w": 24,
         "h": 1
       },
       "panels": []
     },
     {
-      "id": 26,
+      "id": 31,
       "type": "timeseries",
-      "title": "Action executions per minute",
+      "title": "Action execution rate",
       "datasource": {
         "type": "prometheus",
         "uid": "${datasource}"
       },
       "gridPos": {
         "x": 0,
-        "y": 61,
+        "y": 77,
         "w": 8,
         "h": 9
       },
@@ -1444,7 +1769,7 @@
       ],
       "fieldConfig": {
         "defaults": {
-          "unit": "none",
+          "unit": "opm",
           "custom": {
             "lineWidth": 2,
             "fillOpacity": 10,
@@ -1475,16 +1800,16 @@
       }
     },
     {
-      "id": 27,
+      "id": 32,
       "type": "timeseries",
-      "title": "Average action execution time",
+      "title": "Action execution average time",
       "datasource": {
         "type": "prometheus",
         "uid": "${datasource}"
       },
       "gridPos": {
         "x": 8,
-        "y": 61,
+        "y": 77,
         "w": 8,
         "h": 9
       },
@@ -1532,16 +1857,16 @@
       }
     },
     {
-      "id": 28,
+      "id": 33,
       "type": "timeseries",
-      "title": "Max action execution time",
+      "title": "Action execution max time",
       "datasource": {
         "type": "prometheus",
         "uid": "${datasource}"
       },
       "gridPos": {
         "x": 16,
-        "y": 61,
+        "y": 77,
         "w": 8,
         "h": 9
       },
@@ -1590,29 +1915,29 @@
       "description": "Timer max: the longest single operation in the last minutes. Shows rare slow operations that the average hides"
     },
     {
-      "id": 29,
+      "id": 34,
       "type": "row",
       "title": "Data access",
       "collapsed": false,
       "gridPos": {
         "x": 0,
-        "y": 70,
+        "y": 86,
         "w": 24,
         "h": 1
       },
       "panels": []
     },
     {
-      "id": 30,
+      "id": 35,
       "type": "timeseries",
-      "title": "Loads per second by entity",
+      "title": "DataManager load rate",
       "datasource": {
         "type": "prometheus",
         "uid": "${datasource}"
       },
       "gridPos": {
         "x": 0,
-        "y": 71,
+        "y": 87,
         "w": 8,
         "h": 9
       },
@@ -1658,19 +1983,19 @@
           "sort": "desc"
         }
       },
-      "description": "A sharp increase in loads of one entity while the number of view opens stays the same indicates loading in a loop (N+1)"
+      "description": "A sharp increase in loads of one entity while the view open rate stays the same indicates loading in a loop (N+1)"
     },
     {
-      "id": 31,
+      "id": 36,
       "type": "timeseries",
-      "title": "Average load time by entity",
+      "title": "DataManager load average time",
       "datasource": {
         "type": "prometheus",
         "uid": "${datasource}"
       },
       "gridPos": {
         "x": 8,
-        "y": 71,
+        "y": 87,
         "w": 8,
         "h": 9
       },
@@ -1718,16 +2043,16 @@
       }
     },
     {
-      "id": 32,
+      "id": 37,
       "type": "timeseries",
-      "title": "Max load time by entity",
+      "title": "DataManager load max time",
       "datasource": {
         "type": "prometheus",
         "uid": "${datasource}"
       },
       "gridPos": {
         "x": 16,
-        "y": 71,
+        "y": 87,
         "w": 8,
         "h": 9
       },
@@ -1776,16 +2101,16 @@
       "description": "Timer max: the longest single operation in the last minutes. Shows rare slow operations that the average hides"
     },
     {
-      "id": 33,
+      "id": 38,
       "type": "timeseries",
-      "title": "Saves per second",
+      "title": "DataManager save rate",
       "datasource": {
         "type": "prometheus",
         "uid": "${datasource}"
       },
       "gridPos": {
         "x": 0,
-        "y": 80,
+        "y": 96,
         "w": 6,
         "h": 9
       },
@@ -1833,16 +2158,16 @@
       }
     },
     {
-      "id": 34,
+      "id": 39,
       "type": "timeseries",
-      "title": "Average save time",
+      "title": "DataManager save average time",
       "datasource": {
         "type": "prometheus",
         "uid": "${datasource}"
       },
       "gridPos": {
         "x": 6,
-        "y": 80,
+        "y": 96,
         "w": 6,
         "h": 9
       },
@@ -1890,16 +2215,16 @@
       }
     },
     {
-      "id": 35,
+      "id": 40,
       "type": "timeseries",
-      "title": "Max save time",
+      "title": "DataManager save max time",
       "datasource": {
         "type": "prometheus",
         "uid": "${datasource}"
       },
       "gridPos": {
         "x": 12,
-        "y": 80,
+        "y": 96,
         "w": 6,
         "h": 9
       },
@@ -1948,7 +2273,7 @@
       "description": "Timer max: the longest single operation in the last minutes. Shows rare slow operations that the average hides"
     },
     {
-      "id": 36,
+      "id": 41,
       "type": "timeseries",
       "title": "Database connection pool",
       "datasource": {
@@ -1957,7 +2282,7 @@
       },
       "gridPos": {
         "x": 18,
-        "y": 80,
+        "y": 96,
         "w": 6,
         "h": 9
       },
@@ -2024,20 +2349,20 @@
       "description": "Pending connection requests mean that the pool is exhausted"
     },
     {
-      "id": 37,
+      "id": 42,
       "type": "row",
       "title": "HTTP and JVM",
       "collapsed": false,
       "gridPos": {
         "x": 0,
-        "y": 89,
+        "y": 105,
         "w": 24,
         "h": 1
       },
       "panels": []
     },
     {
-      "id": 38,
+      "id": 43,
       "type": "timeseries",
       "title": "HTTP requests per second by outcome",
       "datasource": {
@@ -2046,7 +2371,7 @@
       },
       "gridPos": {
         "x": 0,
-        "y": 90,
+        "y": 106,
         "w": 8,
         "h": 8
       },
@@ -2094,7 +2419,7 @@
       }
     },
     {
-      "id": 39,
+      "id": 44,
       "type": "timeseries",
       "title": "CPU usage",
       "datasource": {
@@ -2103,7 +2428,7 @@
       },
       "gridPos": {
         "x": 8,
-        "y": 90,
+        "y": 106,
         "w": 8,
         "h": 8
       },
@@ -2162,7 +2487,7 @@
       }
     },
     {
-      "id": 40,
+      "id": 45,
       "type": "timeseries",
       "title": "JVM memory (heap)",
       "datasource": {
@@ -2171,7 +2496,7 @@
       },
       "gridPos": {
         "x": 16,
-        "y": 90,
+        "y": 106,
         "w": 8,
         "h": 8
       },
@@ -2228,7 +2553,7 @@
       }
     },
     {
-      "id": 41,
+      "id": 46,
       "type": "timeseries",
       "title": "GC pause time share",
       "datasource": {
@@ -2237,7 +2562,7 @@
       },
       "gridPos": {
         "x": 0,
-        "y": 98,
+        "y": 114,
         "w": 12,
         "h": 7
       },
@@ -2286,7 +2611,7 @@
       "description": "Share of time the JVM spent in garbage collection pauses"
     },
     {
-      "id": 42,
+      "id": 47,
       "type": "timeseries",
       "title": "JVM threads by state",
       "datasource": {
@@ -2295,7 +2620,7 @@
       },
       "gridPos": {
         "x": 12,
-        "y": 98,
+        "y": 114,
         "w": 12,
         "h": 7
       },
@@ -2344,20 +2669,20 @@
       "description": "A growing number of blocked threads indicates lock contention"
     },
     {
-      "id": 43,
+      "id": 48,
       "type": "row",
       "title": "Operations in progress",
       "collapsed": false,
       "gridPos": {
         "x": 0,
-        "y": 105,
+        "y": 121,
         "w": 24,
         "h": 1
       },
       "panels": []
     },
     {
-      "id": 44,
+      "id": 49,
       "type": "timeseries",
       "title": "Operations in progress",
       "datasource": {
@@ -2366,7 +2691,7 @@
       },
       "gridPos": {
         "x": 0,
-        "y": 106,
+        "y": 122,
         "w": 8,
         "h": 9
       },
@@ -2377,7 +2702,7 @@
             "type": "prometheus",
             "uid": "${datasource}"
           },
-          "expr": "sum(jmix_ui_views_active_seconds_count{application=~\"$app\", instance=~\"$instance\"})",
+          "expr": "sum(jmix_ui_views_active_seconds_count{application=~\"$app\", instance=~\"$instance\"} or jmix_ui_views_active_seconds_gcount{application=~\"$app\", instance=~\"$instance\"})",
           "legendFormat": "views"
         },
         {
@@ -2386,7 +2711,7 @@
             "type": "prometheus",
             "uid": "${datasource}"
           },
-          "expr": "sum(jmix_ui_fragments_active_seconds_count{application=~\"$app\", instance=~\"$instance\"})",
+          "expr": "sum(jmix_ui_fragments_active_seconds_count{application=~\"$app\", instance=~\"$instance\"} or jmix_ui_fragments_active_seconds_gcount{application=~\"$app\", instance=~\"$instance\"})",
           "legendFormat": "fragments"
         },
         {
@@ -2395,7 +2720,7 @@
             "type": "prometheus",
             "uid": "${datasource}"
           },
-          "expr": "sum(jmix_ui_data_active_seconds_count{application=~\"$app\", instance=~\"$instance\"})",
+          "expr": "sum(jmix_ui_data_active_seconds_count{application=~\"$app\", instance=~\"$instance\"} or jmix_ui_data_active_seconds_gcount{application=~\"$app\", instance=~\"$instance\"})",
           "legendFormat": "data loaders"
         },
         {
@@ -2404,7 +2729,7 @@
             "type": "prometheus",
             "uid": "${datasource}"
           },
-          "expr": "sum(jmix_ui_actions_active_seconds_count{application=~\"$app\", instance=~\"$instance\"})",
+          "expr": "sum(jmix_ui_actions_active_seconds_count{application=~\"$app\", instance=~\"$instance\"} or jmix_ui_actions_active_seconds_gcount{application=~\"$app\", instance=~\"$instance\"})",
           "legendFormat": "actions"
         },
         {
@@ -2413,7 +2738,7 @@
             "type": "prometheus",
             "uid": "${datasource}"
           },
-          "expr": "sum(jmix_data_load_active_seconds_count{application=~\"$app\", instance=~\"$instance\"})",
+          "expr": "sum(jmix_data_load_active_seconds_count{application=~\"$app\", instance=~\"$instance\"} or jmix_data_load_active_seconds_gcount{application=~\"$app\", instance=~\"$instance\"})",
           "legendFormat": "DataManager loads"
         },
         {
@@ -2422,7 +2747,7 @@
             "type": "prometheus",
             "uid": "${datasource}"
           },
-          "expr": "sum(jmix_data_save_active_seconds_count{application=~\"$app\", instance=~\"$instance\"})",
+          "expr": "sum(jmix_data_save_active_seconds_count{application=~\"$app\", instance=~\"$instance\"} or jmix_data_save_active_seconds_gcount{application=~\"$app\", instance=~\"$instance\"})",
           "legendFormat": "DataManager saves"
         },
         {
@@ -2431,7 +2756,7 @@
             "type": "prometheus",
             "uid": "${datasource}"
           },
-          "expr": "sum(http_server_requests_active_seconds_count{application=~\"$app\", instance=~\"$instance\"})",
+          "expr": "sum(http_server_requests_active_seconds_count{application=~\"$app\", instance=~\"$instance\"} or http_server_requests_active_seconds_gcount{application=~\"$app\", instance=~\"$instance\"})",
           "legendFormat": "HTTP requests"
         }
       ],
@@ -2466,7 +2791,7 @@
       "description": "Number of operations that have started and not yet finished (long task timers). HTTP requests include the request that collects the metrics"
     },
     {
-      "id": 45,
+      "id": 50,
       "type": "timeseries",
       "title": "Longest operation in progress",
       "datasource": {
@@ -2475,7 +2800,7 @@
       },
       "gridPos": {
         "x": 8,
-        "y": 106,
+        "y": 122,
         "w": 8,
         "h": 9
       },
@@ -2575,7 +2900,7 @@
       "description": "Duration of the longest operation that is still running. A growing line means that the operation hangs"
     },
     {
-      "id": 46,
+      "id": 51,
       "type": "timeseries",
       "title": "Longest DataManager load in progress by entity",
       "datasource": {
@@ -2584,7 +2909,7 @@
       },
       "gridPos": {
         "x": 16,
-        "y": 106,
+        "y": 122,
         "w": 8,
         "h": 9
       },
