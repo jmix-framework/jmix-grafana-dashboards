@@ -1,17 +1,11 @@
 <h1>Jmix Grafana Dashboards</h1>
-<h2>Standard Jmix Dashboards</h2>
 
-This repository contains two dashboards for the Micrometer metrics that export for the Prometheus datasource.
-This dashboards should be used for the Grafana monitoring system.
-
-There are four dashboards:
+This repository contains Grafana dashboards for the Micrometer metrics of Jmix applications:
 <ul>
-    <li>The first one is for the <b>Jmix 1.6.0</b> version and later.</li>
-    <li>The second one is for the <b>Jmix 2.2.0</b> version and later.</li>
-    <li>The third one, <b>Jmix 3 Monitoring</b>, is for the <b>Jmix 3.0</b> version and later.</li>
-    <li>The fourth one, <b>Jmix 3 Full Observability</b>, is for the <b>Jmix 3.0</b> version and later and shows traces, logs and profiles together with metrics.</li>
+    <li><b>Jmix 3 Monitoring</b> for the <b>Jmix 3.0</b> version and later.</li>
+    <li><b>Jmix 3 Full Observability</b> for the <b>Jmix 3.0</b> version and later. It shows traces, logs and profiles together with metrics.</li>
+    <li>Dashboards for <b>Jmix 1.6.0</b> and <b>Jmix 2.2.0</b> versions and later.</li>
 </ul>
-<img src="images/jmix_dashboard.png" alt="Jmix Dashboard"/>
 
 <h2>Jmix 3 Monitoring</h2>
 
@@ -51,6 +45,8 @@ Exemplars require the following:
 </ul>
 Metrics exported over OTLP carry no exemplars and no timer maximum, so the dashboard expects the <code>/actuator/prometheus</code> endpoint for metrics. Traces and logs are still sent over OTLP.
 
+<img src="images/jmix_3_full_observability.png" alt="Jmix 3 Full Observability dashboard: exemplar of a view opening linked to its trace"/>
+
 The links in the headers of the Traces, Logs and Profiles panels open the Grafana Drilldown apps in a new tab, with the same time range, for the selected service or for all services. In Profiles Drilldown a profile can be exported to pprof or compared with another time range.
 
 The dashboard does not contain the links between signals: they are settings of the Grafana data sources and are not imported with the dashboard.
@@ -61,7 +57,19 @@ The dashboard does not contain the links between signals: they are settings of t
     <li>The trace link in a log record: the Loki data source, <b>Derived fields</b>.</li>
 </ul>
 
-<img src="images/jmix_3_full_observability.png" alt="Jmix 3 Full Observability dashboard"/>
+A trace with the CPU profile of its span:
+
+<img src="images/jmix_3_trace_profile.png" alt="Trace with the CPU profile of the span"/>
+
+The same trace with the log records of its span:
+
+<img src="images/jmix_3_trace_logs.png" alt="Trace with the log records of the span"/>
+
+<h2>Dashboards for Jmix 1.6 and 2.2</h2>
+
+The <code>Jmix 1.x.json</code> dashboard is for the <b>Jmix 1.6.0</b> version and later, the <code>Jmix 2.x.json</code> dashboard is for the <b>Jmix 2.2.0</b> version and later. Both read metrics from a Prometheus data source.
+
+<img src="images/jmix_dashboard.png" alt="Jmix Dashboard"/>
 
 <h2>Base Prometheus Micrometer Settings for Jmix Application</h2>
 
