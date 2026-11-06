@@ -1,0 +1,3982 @@
+{
+  "__inputs": [
+    {
+      "name": "DS_PROMETHEUS",
+      "label": "Prometheus",
+      "description": "Prometheus that scrapes /actuator/prometheus and stores exemplars",
+      "type": "datasource",
+      "pluginId": "prometheus",
+      "pluginName": "Prometheus"
+    },
+    {
+      "name": "DS_TEMPO",
+      "label": "Tempo",
+      "description": "Tempo that receives traces",
+      "type": "datasource",
+      "pluginId": "tempo",
+      "pluginName": "Tempo"
+    },
+    {
+      "name": "DS_LOKI",
+      "label": "Loki",
+      "description": "Loki that receives OTLP logs",
+      "type": "datasource",
+      "pluginId": "loki",
+      "pluginName": "Loki"
+    },
+    {
+      "name": "DS_PYROSCOPE",
+      "label": "Pyroscope",
+      "description": "Pyroscope that receives profiles",
+      "type": "datasource",
+      "pluginId": "grafana-pyroscope-datasource",
+      "pluginName": "Grafana Pyroscope"
+    }
+  ],
+  "__requires": [
+    {
+      "type": "grafana",
+      "id": "grafana",
+      "name": "Grafana",
+      "version": "10.4.0"
+    },
+    {
+      "type": "datasource",
+      "id": "prometheus",
+      "name": "Prometheus",
+      "version": "1.0.0"
+    },
+    {
+      "type": "datasource",
+      "id": "tempo",
+      "name": "Tempo",
+      "version": "1.0.0"
+    },
+    {
+      "type": "datasource",
+      "id": "loki",
+      "name": "Loki",
+      "version": "1.0.0"
+    },
+    {
+      "type": "datasource",
+      "id": "grafana-pyroscope-datasource",
+      "name": "Grafana Pyroscope",
+      "version": ""
+    },
+    {
+      "type": "panel",
+      "id": "stat",
+      "name": "Stat",
+      "version": ""
+    },
+    {
+      "type": "panel",
+      "id": "timeseries",
+      "name": "Time series",
+      "version": ""
+    },
+    {
+      "type": "panel",
+      "id": "bargauge",
+      "name": "Bar gauge",
+      "version": ""
+    },
+    {
+      "type": "panel",
+      "id": "table",
+      "name": "Table",
+      "version": ""
+    },
+    {
+      "type": "panel",
+      "id": "logs",
+      "name": "Logs",
+      "version": ""
+    },
+    {
+      "type": "panel",
+      "id": "flamegraph",
+      "name": "Flame Graph",
+      "version": ""
+    }
+  ],
+  "id": null,
+  "uid": "jmix-3-full-observability",
+  "title": "Jmix 3 Full Observability",
+  "description": "Metrics, traces, logs and profiles of Jmix 3 applications. Metrics are scraped from /actuator/prometheus, traces and logs are sent over OTLP. Requires jmix.ui.ui-observation-enabled=true and jmix.core.data-observation-enabled=true.",
+  "tags": [
+    "jmix",
+    "jmix-3",
+    "opentelemetry"
+  ],
+  "timezone": "browser",
+  "refresh": "30s",
+  "time": {
+    "from": "now-30m",
+    "to": "now"
+  },
+  "schemaVersion": 39,
+  "editable": true,
+  "graphTooltip": 1,
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": {
+          "type": "grafana",
+          "uid": "-- Grafana --"
+        },
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "type": "dashboard"
+      }
+    ]
+  },
+  "templating": {
+    "list": [
+      {
+        "name": "datasource",
+        "label": "Metrics",
+        "type": "datasource",
+        "query": "prometheus",
+        "current": {
+          "text": "${DS_PROMETHEUS}",
+          "value": "${DS_PROMETHEUS}"
+        }
+      },
+      {
+        "name": "tempo",
+        "label": "Traces",
+        "type": "datasource",
+        "query": "tempo",
+        "current": {
+          "text": "${DS_TEMPO}",
+          "value": "${DS_TEMPO}"
+        }
+      },
+      {
+        "name": "loki",
+        "label": "Logs",
+        "type": "datasource",
+        "query": "loki",
+        "current": {
+          "text": "${DS_LOKI}",
+          "value": "${DS_LOKI}"
+        }
+      },
+      {
+        "name": "pyroscope",
+        "label": "Profiles",
+        "type": "datasource",
+        "query": "grafana-pyroscope-datasource",
+        "current": {
+          "text": "${DS_PYROSCOPE}",
+          "value": "${DS_PYROSCOPE}"
+        }
+      },
+      {
+        "name": "app",
+        "label": "Application",
+        "type": "query",
+        "datasource": {
+          "type": "prometheus",
+          "uid": "${datasource}"
+        },
+        "refresh": 2,
+        "includeAll": true,
+        "multi": true,
+        "current": {
+          "text": "All",
+          "value": "$__all"
+        },
+        "query": {
+          "query": "label_values(jvm_info, application)",
+          "refId": "app"
+        },
+        "definition": "label_values(jvm_info, application)",
+        "allValue": ".*"
+      },
+      {
+        "name": "instance",
+        "label": "Instance",
+        "type": "query",
+        "datasource": {
+          "type": "prometheus",
+          "uid": "${datasource}"
+        },
+        "refresh": 2,
+        "includeAll": true,
+        "multi": true,
+        "current": {
+          "text": "All",
+          "value": "$__all"
+        },
+        "query": {
+          "query": "label_values(jvm_info{application=~\"$app\"}, instance)",
+          "refId": "instance"
+        },
+        "definition": "label_values(jvm_info{application=~\"$app\"}, instance)",
+        "allValue": ".*"
+      },
+      {
+        "name": "view",
+        "label": "View",
+        "type": "query",
+        "datasource": {
+          "type": "prometheus",
+          "uid": "${datasource}"
+        },
+        "refresh": 2,
+        "includeAll": true,
+        "multi": true,
+        "current": {
+          "text": "All",
+          "value": "$__all"
+        },
+        "query": {
+          "query": "label_values(jmix_ui_views_seconds_count{application=~\"$app\"}, view_id)",
+          "refId": "view"
+        },
+        "definition": "label_values(jmix_ui_views_seconds_count{application=~\"$app\"}, view_id)",
+        "allValue": ".*"
+      },
+      {
+        "name": "loader",
+        "label": "Data loader",
+        "type": "query",
+        "datasource": {
+          "type": "prometheus",
+          "uid": "${datasource}"
+        },
+        "refresh": 2,
+        "includeAll": true,
+        "multi": true,
+        "current": {
+          "text": "All",
+          "value": "$__all"
+        },
+        "query": {
+          "query": "label_values(jmix_ui_data_seconds_count{application=~\"$app\", view_id=~\"$view\"}, loader_id)",
+          "refId": "loader"
+        },
+        "definition": "label_values(jmix_ui_data_seconds_count{application=~\"$app\", view_id=~\"$view\"}, loader_id)",
+        "allValue": ".*"
+      },
+      {
+        "name": "entity",
+        "label": "Entity",
+        "type": "query",
+        "datasource": {
+          "type": "prometheus",
+          "uid": "${datasource}"
+        },
+        "refresh": 2,
+        "includeAll": true,
+        "multi": true,
+        "current": {
+          "text": "All",
+          "value": "$__all"
+        },
+        "query": {
+          "query": "label_values(jmix_data_load_seconds_count{application=~\"$app\"}, entity_name)",
+          "refId": "entity"
+        },
+        "definition": "label_values(jmix_data_load_seconds_count{application=~\"$app\"}, entity_name)",
+        "allValue": ".*"
+      },
+      {
+        "name": "service",
+        "label": "Service",
+        "type": "query",
+        "datasource": {
+          "type": "loki",
+          "uid": "${loki}"
+        },
+        "refresh": 2,
+        "includeAll": true,
+        "multi": true,
+        "current": {
+          "text": "All",
+          "value": "$__all"
+        },
+        "query": {
+          "refId": "service",
+          "type": 1,
+          "label": "service_name",
+          "stream": ""
+        },
+        "definition": "label_values(service_name)",
+        "description": "Service name of traces, logs and profiles (spring.application.name)"
+      },
+      {
+        "name": "min_duration",
+        "label": "Min duration",
+        "type": "textbox",
+        "query": "100ms",
+        "current": {
+          "text": "100ms",
+          "value": "100ms"
+        },
+        "description": "Traces and spans shorter than this value are not listed"
+      },
+      {
+        "name": "level",
+        "label": "Level",
+        "type": "custom",
+        "query": "error,warn,info,debug,trace",
+        "multi": true,
+        "includeAll": true,
+        "allValue": ".*",
+        "current": {
+          "text": [
+            "All"
+          ],
+          "value": [
+            "$__all"
+          ]
+        },
+        "options": [
+          {
+            "text": "All",
+            "value": "$__all",
+            "selected": true
+          },
+          {
+            "text": "error",
+            "value": "error",
+            "selected": false
+          },
+          {
+            "text": "warn",
+            "value": "warn",
+            "selected": false
+          },
+          {
+            "text": "info",
+            "value": "info",
+            "selected": false
+          },
+          {
+            "text": "debug",
+            "value": "debug",
+            "selected": false
+          },
+          {
+            "text": "trace",
+            "value": "trace",
+            "selected": false
+          }
+        ]
+      },
+      {
+        "name": "user",
+        "label": "User",
+        "type": "textbox",
+        "query": "",
+        "current": {
+          "text": "",
+          "value": ""
+        },
+        "description": "Part of the user name (jmixUser MDC value)"
+      },
+      {
+        "name": "search",
+        "label": "Search",
+        "type": "textbox",
+        "query": "",
+        "current": {
+          "text": "",
+          "value": ""
+        },
+        "description": "Text in the log message"
+      }
+    ]
+  },
+  "panels": [
+    {
+      "id": 1,
+      "type": "row",
+      "title": "Overview",
+      "collapsed": false,
+      "gridPos": {
+        "x": 0,
+        "y": 0,
+        "w": 24,
+        "h": 1
+      },
+      "panels": []
+    },
+    {
+      "id": 2,
+      "type": "stat",
+      "title": "View open rate",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 1,
+        "w": 5,
+        "h": 4
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "expr": "sum (rate(jmix_ui_views_seconds_count{application=~\"$app\", instance=~\"$instance\", lifecycle_name=\"ready\"}[$__rate_interval])) * 60",
+          "legendFormat": ""
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "opm",
+          "decimals": 1,
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "colorMode": "background",
+        "graphMode": "area",
+        "textMode": "value",
+        "justifyMode": "center"
+      },
+      "description": "Counted by the ready stage. A layout view such as MainView gets ready on every navigation, not only when it is created"
+    },
+    {
+      "id": 3,
+      "type": "stat",
+      "title": "Active sessions",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
+      "gridPos": {
+        "x": 5,
+        "y": 1,
+        "w": 5,
+        "h": 4
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "expr": "sum(tomcat_sessions_active_current_sessions{application=~\"$app\", instance=~\"$instance\"})",
+          "legendFormat": ""
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "none",
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "colorMode": "background",
+        "graphMode": "area",
+        "textMode": "value",
+        "justifyMode": "center"
+      },
+      "description": "Active HTTP sessions. In a Vaadin application this is close to the number of users who work with it"
+    },
+    {
+      "id": 4,
+      "type": "stat",
+      "title": "DataManager operation rate",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
+      "gridPos": {
+        "x": 10,
+        "y": 1,
+        "w": 5,
+        "h": 4
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "expr": "sum (rate(jmix_data_load_seconds_count{application=~\"$app\", instance=~\"$instance\"}[$__rate_interval])) + (sum (rate(jmix_data_save_seconds_count{application=~\"$app\", instance=~\"$instance\"}[$__rate_interval])) or vector(0))",
+          "legendFormat": ""
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "ops",
+          "decimals": 2,
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "colorMode": "background",
+        "graphMode": "area",
+        "textMode": "value",
+        "justifyMode": "center"
+      },
+      "description": "DataManager loads and saves per second"
+    },
+    {
+      "id": 5,
+      "type": "stat",
+      "title": "HTTP 5xx rate",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
+      "gridPos": {
+        "x": 15,
+        "y": 1,
+        "w": 5,
+        "h": 4
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "expr": "(sum (rate(http_server_requests_seconds_count{application=~\"$app\", instance=~\"$instance\", status=~\"5..\"}[$__rate_interval])) or vector(0)) * 60",
+          "legendFormat": ""
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "reqpm",
+          "decimals": 1,
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 0.1
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "colorMode": "background",
+        "graphMode": "area",
+        "textMode": "value",
+        "justifyMode": "center"
+      }
+    },
+    {
+      "id": 6,
+      "type": "stat",
+      "title": "Jmix error rate",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
+      "gridPos": {
+        "x": 20,
+        "y": 1,
+        "w": 4,
+        "h": 4
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "expr": "(sum(rate({__name__=~\"jmix_.+_seconds_count\", application=~\"$app\", instance=~\"$instance\", error!=\"none\", error!=\"\"}[$__rate_interval])) or vector(0)) * 60",
+          "legendFormat": ""
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "opm",
+          "decimals": 1,
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 0.1
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "colorMode": "background",
+        "graphMode": "area",
+        "textMode": "value",
+        "justifyMode": "center"
+      },
+      "description": "Jmix operations that ended with an exception (error tag)"
+    },
+    {
+      "id": 7,
+      "type": "stat",
+      "title": "View open average time",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 5,
+        "w": 6,
+        "h": 4
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "expr": "sum ((sum by (lifecycle_name) (rate(jmix_ui_views_seconds_sum{application=~\"$app\", instance=~\"$instance\", lifecycle_name=~\"create|load|inject|init|beforeShow|ready\"}[$__rate_interval])) / sum by (lifecycle_name) (rate(jmix_ui_views_seconds_count{application=~\"$app\", instance=~\"$instance\", lifecycle_name=~\"create|load|inject|init|beforeShow|ready\"}[$__rate_interval]))) >= 0)",
+          "legendFormat": ""
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "s",
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "orange",
+                "value": 0.5
+              },
+              {
+                "color": "red",
+                "value": 1
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "colorMode": "background",
+        "graphMode": "area",
+        "textMode": "value",
+        "justifyMode": "center"
+      },
+      "description": "Sum of the average times of the opening stages, each averaged over its own number of calls"
+    },
+    {
+      "id": 8,
+      "type": "stat",
+      "title": "View close max time",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
+      "gridPos": {
+        "x": 6,
+        "y": 5,
+        "w": 6,
+        "h": 4
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "expr": "max (jmix_ui_views_seconds_max{application=~\"$app\", instance=~\"$instance\", lifecycle_name=~\"beforeClose|afterClose\"})",
+          "legendFormat": ""
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "s",
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "orange",
+                "value": 0.5
+              },
+              {
+                "color": "red",
+                "value": 1
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "colorMode": "background",
+        "graphMode": "area",
+        "textMode": "value",
+        "justifyMode": "center"
+      },
+      "description": "Longest closing stage (beforeClose or afterClose) in the last minutes (Timer max)"
+    },
+    {
+      "id": 9,
+      "type": "stat",
+      "title": "Data loader average time",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
+      "gridPos": {
+        "x": 12,
+        "y": 5,
+        "w": 6,
+        "h": 4
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "expr": "sum (rate(jmix_ui_data_seconds_sum{application=~\"$app\", instance=~\"$instance\", lifecycle_name=\"load\"}[$__rate_interval])) / sum (rate(jmix_ui_data_seconds_count{application=~\"$app\", instance=~\"$instance\", lifecycle_name=\"load\"}[$__rate_interval]))",
+          "legendFormat": ""
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "s",
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "orange",
+                "value": 0.3
+              },
+              {
+                "color": "red",
+                "value": 1
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "colorMode": "background",
+        "graphMode": "area",
+        "textMode": "value",
+        "justifyMode": "center"
+      },
+      "description": "Average load time of view data loaders"
+    },
+    {
+      "id": 10,
+      "type": "stat",
+      "title": "Data loader max time",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
+      "gridPos": {
+        "x": 18,
+        "y": 5,
+        "w": 6,
+        "h": 4
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "expr": "max (jmix_ui_data_seconds_max{application=~\"$app\", instance=~\"$instance\", lifecycle_name=\"load\"})",
+          "legendFormat": ""
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "s",
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "orange",
+                "value": 1
+              },
+              {
+                "color": "red",
+                "value": 3
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "colorMode": "background",
+        "graphMode": "area",
+        "textMode": "value",
+        "justifyMode": "center"
+      },
+      "description": "Longest single load of a view data loader in the last minutes (Timer max)"
+    },
+    {
+      "id": 11,
+      "type": "row",
+      "title": "Views",
+      "collapsed": false,
+      "gridPos": {
+        "x": 0,
+        "y": 9,
+        "w": 24,
+        "h": 1
+      },
+      "panels": []
+    },
+    {
+      "id": 12,
+      "type": "timeseries",
+      "title": "View open rate",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 10,
+        "w": 12,
+        "h": 8
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "expr": "sum by (view_id) (rate(jmix_ui_views_seconds_count{application=~\"$app\", instance=~\"$instance\", lifecycle_name=\"ready\", view_id=~\"$view\"}[$__rate_interval])) * 60",
+          "legendFormat": "{{view_id}}"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "opm",
+          "custom": {
+            "lineWidth": 2,
+            "fillOpacity": 10,
+            "showPoints": "never",
+            "pointSize": 6,
+            "stacking": {
+              "mode": "none"
+            }
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "right",
+          "calcs": [
+            "mean",
+            "max"
+          ],
+          "sortBy": "Max",
+          "sortDesc": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "description": "Counted by the ready stage. A layout view such as MainView gets ready on every navigation, not only when it is created"
+    },
+    {
+      "id": 13,
+      "type": "timeseries",
+      "title": "View open average time",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
+      "gridPos": {
+        "x": 12,
+        "y": 10,
+        "w": 12,
+        "h": 8
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "expr": "sum by (view_id) ((sum by (view_id, lifecycle_name) (rate(jmix_ui_views_seconds_sum{application=~\"$app\", instance=~\"$instance\", lifecycle_name=~\"create|load|inject|init|beforeShow|ready\", view_id=~\"$view\"}[$__rate_interval])) / sum by (view_id, lifecycle_name) (rate(jmix_ui_views_seconds_count{application=~\"$app\", instance=~\"$instance\", lifecycle_name=~\"create|load|inject|init|beforeShow|ready\", view_id=~\"$view\"}[$__rate_interval]))) >= 0)",
+          "legendFormat": "{{view_id}}",
+          "exemplar": true
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "s",
+          "custom": {
+            "lineWidth": 2,
+            "fillOpacity": 10,
+            "showPoints": "never",
+            "pointSize": 6,
+            "stacking": {
+              "mode": "none"
+            }
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "right",
+          "calcs": [
+            "mean",
+            "max"
+          ],
+          "sortBy": "Max",
+          "sortDesc": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "description": "Sum of the average times of the opening stages, each averaged over its own number of calls. Points are exemplars: the Trace link in the tooltip of a point opens the trace of that operation, Ctrl+click opens it in a new tab"
+    },
+    {
+      "id": 14,
+      "type": "timeseries",
+      "title": "View stage average time",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 18,
+        "w": 12,
+        "h": 8
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "expr": "(sum by (lifecycle_name) (rate(jmix_ui_views_seconds_sum{application=~\"$app\", instance=~\"$instance\", lifecycle_name=~\"create|load|inject|init|beforeShow|ready\", view_id=~\"$view\"}[$__rate_interval])) / sum by (lifecycle_name) (rate(jmix_ui_views_seconds_count{application=~\"$app\", instance=~\"$instance\", lifecycle_name=~\"create|load|inject|init|beforeShow|ready\", view_id=~\"$view\"}[$__rate_interval]))) >= 0",
+          "legendFormat": "{{lifecycle_name}}",
+          "exemplar": true
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "s",
+          "custom": {
+            "lineWidth": 2,
+            "fillOpacity": 40,
+            "showPoints": "never",
+            "pointSize": 6,
+            "stacking": {
+              "mode": "normal"
+            }
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "right",
+          "calcs": [
+            "mean",
+            "max"
+          ],
+          "sortBy": "Max",
+          "sortDesc": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "description": "Opening stages. The sum of the stages is the view open time. Points are exemplars: the Trace link in the tooltip of a point opens the trace of that operation, Ctrl+click opens it in a new tab"
+    },
+    {
+      "id": 15,
+      "type": "timeseries",
+      "title": "View open max time",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
+      "gridPos": {
+        "x": 12,
+        "y": 18,
+        "w": 12,
+        "h": 8
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "expr": "max by (view_id) (jmix_ui_views_seconds_max{application=~\"$app\", instance=~\"$instance\", lifecycle_name=~\"create|load|inject|init|beforeShow|ready\", view_id=~\"$view\"})",
+          "legendFormat": "{{view_id}}",
+          "exemplar": true
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "s",
+          "custom": {
+            "lineWidth": 2,
+            "fillOpacity": 10,
+            "showPoints": "never",
+            "pointSize": 6,
+            "stacking": {
+              "mode": "none"
+            }
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "right",
+          "calcs": [
+            "mean",
+            "max"
+          ],
+          "sortBy": "Max",
+          "sortDesc": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "description": "Longest opening stage of each view. Timer max: the longest single operation in the last minutes. Shows rare slow operations that the average hides. Points are exemplars: the Trace link in the tooltip of a point opens the trace of that operation, Ctrl+click opens it in a new tab"
+    },
+    {
+      "id": 16,
+      "type": "timeseries",
+      "title": "View stage max time",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 26,
+        "w": 12,
+        "h": 8
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "expr": "max by (lifecycle_name) (jmix_ui_views_seconds_max{application=~\"$app\", instance=~\"$instance\", lifecycle_name=~\"create|load|inject|init|beforeShow|ready\", view_id=~\"$view\"})",
+          "legendFormat": "{{lifecycle_name}}",
+          "exemplar": true
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "s",
+          "custom": {
+            "lineWidth": 2,
+            "fillOpacity": 10,
+            "showPoints": "never",
+            "pointSize": 6,
+            "stacking": {
+              "mode": "none"
+            }
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "right",
+          "calcs": [
+            "mean",
+            "max"
+          ],
+          "sortBy": "Max",
+          "sortDesc": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "description": "Timer max: the longest single operation in the last minutes. Shows rare slow operations that the average hides. Points are exemplars: the Trace link in the tooltip of a point opens the trace of that operation, Ctrl+click opens it in a new tab"
+    },
+    {
+      "id": 17,
+      "type": "bargauge",
+      "title": "Views with the highest open average time",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
+      "gridPos": {
+        "x": 12,
+        "y": 26,
+        "w": 12,
+        "h": 8
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "expr": "topk(10, sum by (view_id) ((sum by (view_id, lifecycle_name) (rate(jmix_ui_views_seconds_sum{application=~\"$app\", instance=~\"$instance\", lifecycle_name=~\"create|load|inject|init|beforeShow|ready\"}[$__rate_interval])) / sum by (view_id, lifecycle_name) (rate(jmix_ui_views_seconds_count{application=~\"$app\", instance=~\"$instance\", lifecycle_name=~\"create|load|inject|init|beforeShow|ready\"}[$__rate_interval]))) >= 0))",
+          "legendFormat": "{{view_id}}",
+          "instant": true,
+          "range": false
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "s",
+          "color": {
+            "mode": "continuous-GrYlRd"
+          },
+          "min": 0
+        },
+        "overrides": []
+      },
+      "options": {
+        "orientation": "horizontal",
+        "displayMode": "gradient",
+        "showUnfilled": true,
+        "valueMode": "color",
+        "namePlacement": "left",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "values": false
+        }
+      },
+      "description": "Sum of the average times of the opening stages, each averaged over its own number of calls"
+    },
+    {
+      "id": 18,
+      "type": "timeseries",
+      "title": "View close average time",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 34,
+        "w": 12,
+        "h": 8
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "expr": "sum by (view_id) ((sum by (view_id, lifecycle_name) (rate(jmix_ui_views_seconds_sum{application=~\"$app\", instance=~\"$instance\", lifecycle_name=~\"beforeClose|afterClose\", view_id=~\"$view\"}[$__rate_interval])) / sum by (view_id, lifecycle_name) (rate(jmix_ui_views_seconds_count{application=~\"$app\", instance=~\"$instance\", lifecycle_name=~\"beforeClose|afterClose\", view_id=~\"$view\"}[$__rate_interval]))) >= 0)",
+          "legendFormat": "{{view_id}}",
+          "exemplar": true
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "s",
+          "custom": {
+            "lineWidth": 2,
+            "fillOpacity": 10,
+            "showPoints": "never",
+            "pointSize": 6,
+            "stacking": {
+              "mode": "none"
+            }
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "right",
+          "calcs": [
+            "mean",
+            "max"
+          ],
+          "sortBy": "Max",
+          "sortDesc": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "description": "Sum of the average times of the beforeClose and afterClose stages. Long closing usually means work in BeforeCloseEvent handlers, for example a check of unsaved changes. Points are exemplars: the Trace link in the tooltip of a point opens the trace of that operation, Ctrl+click opens it in a new tab"
+    },
+    {
+      "id": 19,
+      "type": "timeseries",
+      "title": "View close max time",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
+      "gridPos": {
+        "x": 12,
+        "y": 34,
+        "w": 12,
+        "h": 8
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "expr": "max by (view_id) (jmix_ui_views_seconds_max{application=~\"$app\", instance=~\"$instance\", lifecycle_name=~\"beforeClose|afterClose\", view_id=~\"$view\"})",
+          "legendFormat": "{{view_id}}",
+          "exemplar": true
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "s",
+          "custom": {
+            "lineWidth": 2,
+            "fillOpacity": 10,
+            "showPoints": "never",
+            "pointSize": 6,
+            "stacking": {
+              "mode": "none"
+            }
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "right",
+          "calcs": [
+            "mean",
+            "max"
+          ],
+          "sortBy": "Max",
+          "sortDesc": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "description": "Longest closing stage of each view. Timer max: the longest single operation in the last minutes. Shows rare slow operations that the average hides. Points are exemplars: the Trace link in the tooltip of a point opens the trace of that operation, Ctrl+click opens it in a new tab"
+    },
+    {
+      "id": 20,
+      "type": "row",
+      "title": "Data loaders",
+      "collapsed": false,
+      "gridPos": {
+        "x": 0,
+        "y": 42,
+        "w": 24,
+        "h": 1
+      },
+      "panels": []
+    },
+    {
+      "id": 21,
+      "type": "timeseries",
+      "title": "Data loader average time",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 43,
+        "w": 12,
+        "h": 8
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "expr": "sum by (view_id, loader_id) (rate(jmix_ui_data_seconds_sum{application=~\"$app\", instance=~\"$instance\", lifecycle_name=\"load\", view_id=~\"$view\", loader_id=~\"$loader\"}[$__rate_interval])) / sum by (view_id, loader_id) (rate(jmix_ui_data_seconds_count{application=~\"$app\", instance=~\"$instance\", lifecycle_name=\"load\", view_id=~\"$view\", loader_id=~\"$loader\"}[$__rate_interval]))",
+          "legendFormat": "{{view_id}} / {{loader_id}}",
+          "exemplar": true
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "s",
+          "custom": {
+            "lineWidth": 2,
+            "fillOpacity": 10,
+            "showPoints": "never",
+            "pointSize": 6,
+            "stacking": {
+              "mode": "none"
+            }
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "right",
+          "calcs": [
+            "mean",
+            "max"
+          ],
+          "sortBy": "Max",
+          "sortDesc": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "description": "Points are exemplars: the Trace link in the tooltip of a point opens the trace of that operation, Ctrl+click opens it in a new tab"
+    },
+    {
+      "id": 22,
+      "type": "timeseries",
+      "title": "Data loader max time",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
+      "gridPos": {
+        "x": 12,
+        "y": 43,
+        "w": 12,
+        "h": 8
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "expr": "max by (view_id, loader_id) (jmix_ui_data_seconds_max{application=~\"$app\", instance=~\"$instance\", lifecycle_name=\"load\", view_id=~\"$view\", loader_id=~\"$loader\"})",
+          "legendFormat": "{{view_id}} / {{loader_id}}",
+          "exemplar": true
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "s",
+          "custom": {
+            "lineWidth": 2,
+            "fillOpacity": 10,
+            "showPoints": "never",
+            "pointSize": 6,
+            "stacking": {
+              "mode": "none"
+            }
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "right",
+          "calcs": [
+            "mean",
+            "max"
+          ],
+          "sortBy": "Max",
+          "sortDesc": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "description": "Timer max: the longest single operation in the last minutes. Shows rare slow operations that the average hides. Points are exemplars: the Trace link in the tooltip of a point opens the trace of that operation, Ctrl+click opens it in a new tab"
+    },
+    {
+      "id": 23,
+      "type": "timeseries",
+      "title": "Data loader rate",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 51,
+        "w": 12,
+        "h": 8
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "expr": "sum by (view_id, loader_id) (rate(jmix_ui_data_seconds_count{application=~\"$app\", instance=~\"$instance\", lifecycle_name=\"load\", view_id=~\"$view\", loader_id=~\"$loader\"}[$__rate_interval])) * 60",
+          "legendFormat": "{{view_id}} / {{loader_id}}"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "opm",
+          "custom": {
+            "lineWidth": 2,
+            "fillOpacity": 10,
+            "showPoints": "never",
+            "pointSize": 6,
+            "stacking": {
+              "mode": "none"
+            }
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "right",
+          "calcs": [
+            "mean",
+            "max"
+          ],
+          "sortBy": "Max",
+          "sortDesc": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      }
+    },
+    {
+      "id": 24,
+      "type": "bargauge",
+      "title": "Data loaders with the highest average time",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
+      "gridPos": {
+        "x": 12,
+        "y": 51,
+        "w": 12,
+        "h": 8
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "expr": "topk(10, sum by (view_id, loader_id) (rate(jmix_ui_data_seconds_sum{application=~\"$app\", instance=~\"$instance\", lifecycle_name=\"load\", view_id=~\"$view\", loader_id=~\"$loader\"}[$__rate_interval])) / sum by (view_id, loader_id) (rate(jmix_ui_data_seconds_count{application=~\"$app\", instance=~\"$instance\", lifecycle_name=\"load\", view_id=~\"$view\", loader_id=~\"$loader\"}[$__rate_interval])))",
+          "legendFormat": "{{view_id}} / {{loader_id}}",
+          "instant": true,
+          "range": false
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "s",
+          "color": {
+            "mode": "continuous-GrYlRd"
+          },
+          "min": 0
+        },
+        "overrides": []
+      },
+      "options": {
+        "orientation": "horizontal",
+        "displayMode": "gradient",
+        "showUnfilled": true,
+        "valueMode": "color",
+        "namePlacement": "left",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "values": false
+        }
+      }
+    },
+    {
+      "id": 25,
+      "type": "timeseries",
+      "title": "Data loader stage average time",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 59,
+        "w": 12,
+        "h": 8
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "expr": "sum by (view_id, loader_id, lifecycle_name) (rate(jmix_ui_data_seconds_sum{application=~\"$app\", instance=~\"$instance\", view_id=~\"$view\", loader_id=~\"$loader\"}[$__rate_interval])) / sum by (view_id, loader_id, lifecycle_name) (rate(jmix_ui_data_seconds_count{application=~\"$app\", instance=~\"$instance\", view_id=~\"$view\", loader_id=~\"$loader\"}[$__rate_interval]))",
+          "legendFormat": "{{view_id}} / {{loader_id}} {{lifecycle_name}}",
+          "exemplar": true
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "s",
+          "custom": {
+            "lineWidth": 2,
+            "fillOpacity": 10,
+            "showPoints": "never",
+            "pointSize": 6,
+            "stacking": {
+              "mode": "none"
+            }
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "right",
+          "calcs": [
+            "mean",
+            "max"
+          ],
+          "sortBy": "Max",
+          "sortDesc": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "description": "preLoad and postLoad are the PreLoadEvent and PostLoadEvent handlers of the application, load is the loading itself. Points are exemplars: the Trace link in the tooltip of a point opens the trace of that operation, Ctrl+click opens it in a new tab"
+    },
+    {
+      "id": 26,
+      "type": "timeseries",
+      "title": "Data loader stage max time",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
+      "gridPos": {
+        "x": 12,
+        "y": 59,
+        "w": 12,
+        "h": 8
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "expr": "max by (view_id, loader_id, lifecycle_name) (jmix_ui_data_seconds_max{application=~\"$app\", instance=~\"$instance\", view_id=~\"$view\", loader_id=~\"$loader\"})",
+          "legendFormat": "{{view_id}} / {{loader_id}} {{lifecycle_name}}",
+          "exemplar": true
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "s",
+          "custom": {
+            "lineWidth": 2,
+            "fillOpacity": 10,
+            "showPoints": "never",
+            "pointSize": 6,
+            "stacking": {
+              "mode": "none"
+            }
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "right",
+          "calcs": [
+            "mean",
+            "max"
+          ],
+          "sortBy": "Max",
+          "sortDesc": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "description": "Timer max: the longest single operation in the last minutes. Shows rare slow operations that the average hides. Points are exemplars: the Trace link in the tooltip of a point opens the trace of that operation, Ctrl+click opens it in a new tab"
+    },
+    {
+      "id": 27,
+      "type": "row",
+      "title": "Fragments",
+      "collapsed": false,
+      "gridPos": {
+        "x": 0,
+        "y": 67,
+        "w": 24,
+        "h": 1
+      },
+      "panels": []
+    },
+    {
+      "id": 28,
+      "type": "timeseries",
+      "title": "Fragment stage average time",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 68,
+        "w": 12,
+        "h": 8
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "expr": "label_replace(sum by (fragment_class, lifecycle_name) (rate(jmix_ui_fragments_seconds_sum{application=~\"$app\", instance=~\"$instance\", view_id=~\"$view|N/A\"}[$__rate_interval])) / sum by (fragment_class, lifecycle_name) (rate(jmix_ui_fragments_seconds_count{application=~\"$app\", instance=~\"$instance\", view_id=~\"$view|N/A\"}[$__rate_interval])), \"fragment\", \"$1\", \"fragment_class\", \".*\\\\.([^.]+)\")",
+          "legendFormat": "{{fragment}} {{lifecycle_name}}",
+          "exemplar": true
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "s",
+          "custom": {
+            "lineWidth": 2,
+            "fillOpacity": 10,
+            "showPoints": "never",
+            "pointSize": 6,
+            "stacking": {
+              "mode": "none"
+            }
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "right",
+          "calcs": [
+            "mean",
+            "max"
+          ],
+          "sortBy": "Max",
+          "sortDesc": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "description": "The ready stage has no view ID (N/A), so the View filter does not narrow it down. Points are exemplars: the Trace link in the tooltip of a point opens the trace of that operation, Ctrl+click opens it in a new tab"
+    },
+    {
+      "id": 29,
+      "type": "timeseries",
+      "title": "Fragment stage max time",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
+      "gridPos": {
+        "x": 12,
+        "y": 68,
+        "w": 12,
+        "h": 8
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "expr": "label_replace(max by (fragment_class, lifecycle_name) (jmix_ui_fragments_seconds_max{application=~\"$app\", instance=~\"$instance\", view_id=~\"$view|N/A\"}), \"fragment\", \"$1\", \"fragment_class\", \".*\\\\.([^.]+)\")",
+          "legendFormat": "{{fragment}} {{lifecycle_name}}",
+          "exemplar": true
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "s",
+          "custom": {
+            "lineWidth": 2,
+            "fillOpacity": 10,
+            "showPoints": "never",
+            "pointSize": 6,
+            "stacking": {
+              "mode": "none"
+            }
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "right",
+          "calcs": [
+            "mean",
+            "max"
+          ],
+          "sortBy": "Max",
+          "sortDesc": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "description": "Timer max: the longest single operation in the last minutes. Shows rare slow operations that the average hides. The ready stage has no view ID (N/A), so the View filter does not narrow it down. Points are exemplars: the Trace link in the tooltip of a point opens the trace of that operation, Ctrl+click opens it in a new tab"
+    },
+    {
+      "id": 30,
+      "type": "row",
+      "title": "Actions",
+      "collapsed": false,
+      "gridPos": {
+        "x": 0,
+        "y": 76,
+        "w": 24,
+        "h": 1
+      },
+      "panels": []
+    },
+    {
+      "id": 31,
+      "type": "timeseries",
+      "title": "Action execution rate",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 77,
+        "w": 8,
+        "h": 9
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "expr": "sum by (view_id, action_id) (rate(jmix_ui_actions_seconds_count{application=~\"$app\", instance=~\"$instance\", view_id=~\"$view|N/A\"}[$__rate_interval])) * 60",
+          "legendFormat": "{{view_id}} / {{action_id}}"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "opm",
+          "custom": {
+            "lineWidth": 2,
+            "fillOpacity": 10,
+            "showPoints": "never",
+            "pointSize": 6,
+            "stacking": {
+              "mode": "none"
+            }
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "mean",
+            "max"
+          ],
+          "sortBy": "Max",
+          "sortDesc": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      }
+    },
+    {
+      "id": 32,
+      "type": "timeseries",
+      "title": "Action execution average time",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
+      "gridPos": {
+        "x": 8,
+        "y": 77,
+        "w": 8,
+        "h": 9
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "expr": "sum by (view_id, action_id) (rate(jmix_ui_actions_seconds_sum{application=~\"$app\", instance=~\"$instance\", view_id=~\"$view|N/A\"}[$__rate_interval])) / sum by (view_id, action_id) (rate(jmix_ui_actions_seconds_count{application=~\"$app\", instance=~\"$instance\", view_id=~\"$view|N/A\"}[$__rate_interval]))",
+          "legendFormat": "{{view_id}} / {{action_id}}",
+          "exemplar": true
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "s",
+          "custom": {
+            "lineWidth": 2,
+            "fillOpacity": 10,
+            "showPoints": "never",
+            "pointSize": 6,
+            "stacking": {
+              "mode": "none"
+            }
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "mean",
+            "max"
+          ],
+          "sortBy": "Max",
+          "sortDesc": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "description": "Points are exemplars: the Trace link in the tooltip of a point opens the trace of that operation, Ctrl+click opens it in a new tab"
+    },
+    {
+      "id": 33,
+      "type": "timeseries",
+      "title": "Action execution max time",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
+      "gridPos": {
+        "x": 16,
+        "y": 77,
+        "w": 8,
+        "h": 9
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "expr": "max by (view_id, action_id) (jmix_ui_actions_seconds_max{application=~\"$app\", instance=~\"$instance\", view_id=~\"$view|N/A\"})",
+          "legendFormat": "{{view_id}} / {{action_id}}",
+          "exemplar": true
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "s",
+          "custom": {
+            "lineWidth": 2,
+            "fillOpacity": 10,
+            "showPoints": "never",
+            "pointSize": 6,
+            "stacking": {
+              "mode": "none"
+            }
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "mean",
+            "max"
+          ],
+          "sortBy": "Max",
+          "sortDesc": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "description": "Timer max: the longest single operation in the last minutes. Shows rare slow operations that the average hides. Points are exemplars: the Trace link in the tooltip of a point opens the trace of that operation, Ctrl+click opens it in a new tab"
+    },
+    {
+      "id": 34,
+      "type": "row",
+      "title": "Data access",
+      "collapsed": false,
+      "gridPos": {
+        "x": 0,
+        "y": 86,
+        "w": 24,
+        "h": 1
+      },
+      "panels": []
+    },
+    {
+      "id": 35,
+      "type": "timeseries",
+      "title": "DataManager load rate",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 87,
+        "w": 8,
+        "h": 9
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "expr": "sum by (entity_name, method) (rate(jmix_data_load_seconds_count{application=~\"$app\", instance=~\"$instance\", entity_name!=\"\", entity_name=~\"$entity\"}[$__rate_interval]))",
+          "legendFormat": "{{entity_name}} {{method}}"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "ops",
+          "custom": {
+            "lineWidth": 2,
+            "fillOpacity": 10,
+            "showPoints": "never",
+            "pointSize": 6,
+            "stacking": {
+              "mode": "none"
+            }
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "mean",
+            "max"
+          ],
+          "sortBy": "Max",
+          "sortDesc": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "description": "A sharp increase in loads of one entity while the view open rate stays the same indicates loading in a loop (N+1)"
+    },
+    {
+      "id": 36,
+      "type": "timeseries",
+      "title": "DataManager load average time",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
+      "gridPos": {
+        "x": 8,
+        "y": 87,
+        "w": 8,
+        "h": 9
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "expr": "sum by (entity_name) (rate(jmix_data_load_seconds_sum{application=~\"$app\", instance=~\"$instance\", entity_name!=\"\", entity_name=~\"$entity\"}[$__rate_interval])) / sum by (entity_name) (rate(jmix_data_load_seconds_count{application=~\"$app\", instance=~\"$instance\", entity_name!=\"\", entity_name=~\"$entity\"}[$__rate_interval]))",
+          "legendFormat": "{{entity_name}}",
+          "exemplar": true
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "s",
+          "custom": {
+            "lineWidth": 2,
+            "fillOpacity": 10,
+            "showPoints": "never",
+            "pointSize": 6,
+            "stacking": {
+              "mode": "none"
+            }
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "mean",
+            "max"
+          ],
+          "sortBy": "Max",
+          "sortDesc": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "description": "Points are exemplars: the Trace link in the tooltip of a point opens the trace of that operation, Ctrl+click opens it in a new tab"
+    },
+    {
+      "id": 37,
+      "type": "timeseries",
+      "title": "DataManager load max time",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
+      "gridPos": {
+        "x": 16,
+        "y": 87,
+        "w": 8,
+        "h": 9
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "expr": "max by (entity_name) (jmix_data_load_seconds_max{application=~\"$app\", instance=~\"$instance\", entity_name!=\"\", entity_name=~\"$entity\"})",
+          "legendFormat": "{{entity_name}}",
+          "exemplar": true
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "s",
+          "custom": {
+            "lineWidth": 2,
+            "fillOpacity": 10,
+            "showPoints": "never",
+            "pointSize": 6,
+            "stacking": {
+              "mode": "none"
+            }
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "mean",
+            "max"
+          ],
+          "sortBy": "Max",
+          "sortDesc": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "description": "Timer max: the longest single operation in the last minutes. Shows rare slow operations that the average hides. Points are exemplars: the Trace link in the tooltip of a point opens the trace of that operation, Ctrl+click opens it in a new tab"
+    },
+    {
+      "id": 38,
+      "type": "timeseries",
+      "title": "DataManager save rate",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 96,
+        "w": 6,
+        "h": 9
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "expr": "sum by (dataStore) (rate(jmix_data_save_seconds_count{application=~\"$app\", instance=~\"$instance\"}[$__rate_interval]))",
+          "legendFormat": "{{dataStore}}"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "ops",
+          "custom": {
+            "lineWidth": 2,
+            "fillOpacity": 10,
+            "showPoints": "never",
+            "pointSize": 6,
+            "stacking": {
+              "mode": "none"
+            }
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "mean",
+            "max"
+          ],
+          "sortBy": "Max",
+          "sortDesc": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      }
+    },
+    {
+      "id": 39,
+      "type": "timeseries",
+      "title": "DataManager save average time",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
+      "gridPos": {
+        "x": 6,
+        "y": 96,
+        "w": 6,
+        "h": 9
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "expr": "sum by (dataStore) (rate(jmix_data_save_seconds_sum{application=~\"$app\", instance=~\"$instance\"}[$__rate_interval])) / sum by (dataStore) (rate(jmix_data_save_seconds_count{application=~\"$app\", instance=~\"$instance\"}[$__rate_interval]))",
+          "legendFormat": "{{dataStore}}",
+          "exemplar": true
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "s",
+          "custom": {
+            "lineWidth": 2,
+            "fillOpacity": 10,
+            "showPoints": "never",
+            "pointSize": 6,
+            "stacking": {
+              "mode": "none"
+            }
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "mean",
+            "max"
+          ],
+          "sortBy": "Max",
+          "sortDesc": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "description": "Points are exemplars: the Trace link in the tooltip of a point opens the trace of that operation, Ctrl+click opens it in a new tab"
+    },
+    {
+      "id": 40,
+      "type": "timeseries",
+      "title": "DataManager save max time",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
+      "gridPos": {
+        "x": 12,
+        "y": 96,
+        "w": 6,
+        "h": 9
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "expr": "max by (dataStore) (jmix_data_save_seconds_max{application=~\"$app\", instance=~\"$instance\"})",
+          "legendFormat": "{{dataStore}}",
+          "exemplar": true
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "s",
+          "custom": {
+            "lineWidth": 2,
+            "fillOpacity": 10,
+            "showPoints": "never",
+            "pointSize": 6,
+            "stacking": {
+              "mode": "none"
+            }
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "mean",
+            "max"
+          ],
+          "sortBy": "Max",
+          "sortDesc": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "description": "Timer max: the longest single operation in the last minutes. Shows rare slow operations that the average hides. Points are exemplars: the Trace link in the tooltip of a point opens the trace of that operation, Ctrl+click opens it in a new tab"
+    },
+    {
+      "id": 41,
+      "type": "timeseries",
+      "title": "Database connection pool",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
+      "gridPos": {
+        "x": 18,
+        "y": 96,
+        "w": 6,
+        "h": 9
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "expr": "sum by (pool) (hikaricp_connections_active{application=~\"$app\", instance=~\"$instance\"})",
+          "legendFormat": "active {{pool}}"
+        },
+        {
+          "refId": "B",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "expr": "sum by (pool) (hikaricp_connections_pending{application=~\"$app\", instance=~\"$instance\"})",
+          "legendFormat": "pending {{pool}}"
+        },
+        {
+          "refId": "C",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "expr": "max by (pool) (hikaricp_connections_max{application=~\"$app\", instance=~\"$instance\"})",
+          "legendFormat": "max {{pool}}"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "none",
+          "custom": {
+            "lineWidth": 2,
+            "fillOpacity": 10,
+            "showPoints": "never",
+            "pointSize": 6,
+            "stacking": {
+              "mode": "none"
+            }
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "mean",
+            "max"
+          ],
+          "sortBy": "Max",
+          "sortDesc": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "description": "Pending connection requests mean that the pool is exhausted"
+    },
+    {
+      "id": 42,
+      "type": "row",
+      "title": "HTTP and JVM",
+      "collapsed": false,
+      "gridPos": {
+        "x": 0,
+        "y": 105,
+        "w": 24,
+        "h": 1
+      },
+      "panels": []
+    },
+    {
+      "id": 43,
+      "type": "timeseries",
+      "title": "HTTP requests per second by outcome",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 106,
+        "w": 8,
+        "h": 8
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "expr": "sum by (outcome) (rate(http_server_requests_seconds_count{application=~\"$app\", instance=~\"$instance\"}[$__rate_interval]))",
+          "legendFormat": "{{outcome}}"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "reqps",
+          "custom": {
+            "lineWidth": 2,
+            "fillOpacity": 40,
+            "showPoints": "never",
+            "pointSize": 6,
+            "stacking": {
+              "mode": "normal"
+            }
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "mean",
+            "max"
+          ],
+          "sortBy": "Max",
+          "sortDesc": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      }
+    },
+    {
+      "id": 44,
+      "type": "timeseries",
+      "title": "CPU usage",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
+      "gridPos": {
+        "x": 8,
+        "y": 106,
+        "w": 8,
+        "h": 8
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "expr": "max(process_cpu_usage{application=~\"$app\", instance=~\"$instance\"})",
+          "legendFormat": "process"
+        },
+        {
+          "refId": "B",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "expr": "max(system_cpu_usage{application=~\"$app\", instance=~\"$instance\"})",
+          "legendFormat": "system"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percentunit",
+          "min": 0,
+          "max": 1,
+          "custom": {
+            "lineWidth": 2,
+            "fillOpacity": 10,
+            "showPoints": "never",
+            "pointSize": 6,
+            "stacking": {
+              "mode": "none"
+            }
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "mean",
+            "max"
+          ],
+          "sortBy": "Max",
+          "sortDesc": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      }
+    },
+    {
+      "id": 45,
+      "type": "timeseries",
+      "title": "JVM memory (heap)",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
+      "gridPos": {
+        "x": 16,
+        "y": 106,
+        "w": 8,
+        "h": 8
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "expr": "sum(jvm_memory_used_bytes{application=~\"$app\", instance=~\"$instance\", area=\"heap\"})",
+          "legendFormat": "used"
+        },
+        {
+          "refId": "B",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "expr": "sum(jvm_memory_max_bytes{application=~\"$app\", instance=~\"$instance\", area=\"heap\"} > 0)",
+          "legendFormat": "max"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "bytes",
+          "custom": {
+            "lineWidth": 2,
+            "fillOpacity": 10,
+            "showPoints": "never",
+            "pointSize": 6,
+            "stacking": {
+              "mode": "none"
+            }
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "mean",
+            "max"
+          ],
+          "sortBy": "Max",
+          "sortDesc": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      }
+    },
+    {
+      "id": 46,
+      "type": "timeseries",
+      "title": "GC pause time share",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 114,
+        "w": 12,
+        "h": 7
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "expr": "sum by (gc) (rate(jvm_gc_pause_seconds_sum{application=~\"$app\", instance=~\"$instance\"}[$__rate_interval]))",
+          "legendFormat": "{{gc}}"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percentunit",
+          "custom": {
+            "lineWidth": 2,
+            "fillOpacity": 10,
+            "showPoints": "never",
+            "pointSize": 6,
+            "stacking": {
+              "mode": "none"
+            }
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "mean",
+            "max"
+          ],
+          "sortBy": "Max",
+          "sortDesc": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "description": "Share of time the JVM spent in garbage collection pauses"
+    },
+    {
+      "id": 47,
+      "type": "timeseries",
+      "title": "JVM threads by state",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
+      "gridPos": {
+        "x": 12,
+        "y": 114,
+        "w": 12,
+        "h": 7
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "expr": "sum by (state) (jvm_threads_states_threads{application=~\"$app\", instance=~\"$instance\"})",
+          "legendFormat": "{{state}}"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "none",
+          "custom": {
+            "lineWidth": 2,
+            "fillOpacity": 30,
+            "showPoints": "never",
+            "pointSize": 6,
+            "stacking": {
+              "mode": "normal"
+            }
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "mean",
+            "max"
+          ],
+          "sortBy": "Max",
+          "sortDesc": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "description": "A growing number of blocked threads indicates lock contention"
+    },
+    {
+      "id": 48,
+      "type": "row",
+      "title": "Operations in progress",
+      "collapsed": false,
+      "gridPos": {
+        "x": 0,
+        "y": 121,
+        "w": 24,
+        "h": 1
+      },
+      "panels": []
+    },
+    {
+      "id": 49,
+      "type": "timeseries",
+      "title": "Operations in progress",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 122,
+        "w": 8,
+        "h": 9
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "expr": "sum(jmix_ui_views_active_seconds_count{application=~\"$app\", instance=~\"$instance\"} or jmix_ui_views_active_seconds_gcount{application=~\"$app\", instance=~\"$instance\"})",
+          "legendFormat": "views"
+        },
+        {
+          "refId": "B",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "expr": "sum(jmix_ui_fragments_active_seconds_count{application=~\"$app\", instance=~\"$instance\"} or jmix_ui_fragments_active_seconds_gcount{application=~\"$app\", instance=~\"$instance\"})",
+          "legendFormat": "fragments"
+        },
+        {
+          "refId": "C",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "expr": "sum(jmix_ui_data_active_seconds_count{application=~\"$app\", instance=~\"$instance\"} or jmix_ui_data_active_seconds_gcount{application=~\"$app\", instance=~\"$instance\"})",
+          "legendFormat": "data loaders"
+        },
+        {
+          "refId": "D",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "expr": "sum(jmix_ui_actions_active_seconds_count{application=~\"$app\", instance=~\"$instance\"} or jmix_ui_actions_active_seconds_gcount{application=~\"$app\", instance=~\"$instance\"})",
+          "legendFormat": "actions"
+        },
+        {
+          "refId": "E",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "expr": "sum(jmix_data_load_active_seconds_count{application=~\"$app\", instance=~\"$instance\"} or jmix_data_load_active_seconds_gcount{application=~\"$app\", instance=~\"$instance\"})",
+          "legendFormat": "DataManager loads"
+        },
+        {
+          "refId": "F",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "expr": "sum(jmix_data_save_active_seconds_count{application=~\"$app\", instance=~\"$instance\"} or jmix_data_save_active_seconds_gcount{application=~\"$app\", instance=~\"$instance\"})",
+          "legendFormat": "DataManager saves"
+        },
+        {
+          "refId": "G",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "expr": "sum(http_server_requests_active_seconds_count{application=~\"$app\", instance=~\"$instance\"} or http_server_requests_active_seconds_gcount{application=~\"$app\", instance=~\"$instance\"})",
+          "legendFormat": "HTTP requests"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "none",
+          "custom": {
+            "lineWidth": 2,
+            "fillOpacity": 10,
+            "showPoints": "never",
+            "pointSize": 6,
+            "stacking": {
+              "mode": "none"
+            }
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom",
+          "calcs": [],
+          "sortBy": "Max",
+          "sortDesc": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "description": "Number of operations that have started and not yet finished (long task timers). HTTP requests include the request that collects the metrics"
+    },
+    {
+      "id": 50,
+      "type": "timeseries",
+      "title": "Longest operation in progress",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
+      "gridPos": {
+        "x": 8,
+        "y": 122,
+        "w": 8,
+        "h": 9
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "expr": "max(jmix_ui_views_active_seconds_max{application=~\"$app\", instance=~\"$instance\"})",
+          "legendFormat": "views",
+          "exemplar": true
+        },
+        {
+          "refId": "B",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "expr": "max(jmix_ui_fragments_active_seconds_max{application=~\"$app\", instance=~\"$instance\"})",
+          "legendFormat": "fragments",
+          "exemplar": true
+        },
+        {
+          "refId": "C",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "expr": "max(jmix_ui_data_active_seconds_max{application=~\"$app\", instance=~\"$instance\"})",
+          "legendFormat": "data loaders",
+          "exemplar": true
+        },
+        {
+          "refId": "D",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "expr": "max(jmix_ui_actions_active_seconds_max{application=~\"$app\", instance=~\"$instance\"})",
+          "legendFormat": "actions",
+          "exemplar": true
+        },
+        {
+          "refId": "E",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "expr": "max(jmix_data_load_active_seconds_max{application=~\"$app\", instance=~\"$instance\"})",
+          "legendFormat": "DataManager loads",
+          "exemplar": true
+        },
+        {
+          "refId": "F",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "expr": "max(jmix_data_save_active_seconds_max{application=~\"$app\", instance=~\"$instance\"})",
+          "legendFormat": "DataManager saves",
+          "exemplar": true
+        },
+        {
+          "refId": "G",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "expr": "max(http_server_requests_active_seconds_max{application=~\"$app\", instance=~\"$instance\"})",
+          "legendFormat": "HTTP requests",
+          "exemplar": true
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "s",
+          "custom": {
+            "lineWidth": 2,
+            "fillOpacity": 10,
+            "showPoints": "never",
+            "pointSize": 6,
+            "stacking": {
+              "mode": "none"
+            }
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom",
+          "calcs": [],
+          "sortBy": "Max",
+          "sortDesc": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "description": "Duration of the longest operation that is still running. A growing line means that the operation hangs. Points are exemplars: the Trace link in the tooltip of a point opens the trace of that operation, Ctrl+click opens it in a new tab"
+    },
+    {
+      "id": 51,
+      "type": "timeseries",
+      "title": "Longest DataManager load in progress by entity",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
+      "gridPos": {
+        "x": 16,
+        "y": 122,
+        "w": 8,
+        "h": 9
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "expr": "max by (entity_name, method) (jmix_data_load_active_seconds_max{application=~\"$app\", instance=~\"$instance\", entity_name!=\"\"}) > 0",
+          "legendFormat": "{{entity_name}} {{method}}",
+          "exemplar": true
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "s",
+          "noValue": "No operations in progress",
+          "custom": {
+            "lineWidth": 2,
+            "fillOpacity": 10,
+            "showPoints": "always",
+            "pointSize": 6,
+            "stacking": {
+              "mode": "none"
+            }
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom",
+          "calcs": [],
+          "sortBy": "Max",
+          "sortDesc": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "description": "Entities whose loading is running now, by the duration of the longest load. Points are exemplars: the Trace link in the tooltip of a point opens the trace of that operation, Ctrl+click opens it in a new tab"
+    },
+    {
+      "id": 52,
+      "type": "row",
+      "title": "Traces",
+      "collapsed": false,
+      "gridPos": {
+        "x": 0,
+        "y": 131,
+        "w": 24,
+        "h": 1
+      },
+      "panels": []
+    },
+    {
+      "id": 53,
+      "type": "table",
+      "title": "Slow requests",
+      "description": "Traces longer than the \"Min duration\" filter. A trace shows which view stages, data loaders and DataManager operations the request consisted of. A trace or span ID opens the trace, Ctrl+click opens it in a new tab",
+      "datasource": {
+        "type": "tempo",
+        "uid": "${tempo}"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 132,
+        "w": 12,
+        "h": 10
+      },
+      "links": [
+        {
+          "title": "Traces Drilldown: ${service:raw}",
+          "targetBlank": true,
+          "url": "/a/grafana-exploretraces-app/explore?${__url_time_range}&var-ds=${tempo}&var-filters=resource.service.name%7C%3D%7C${service:raw}&var-primarySignal=nestedSetParent%3C0&actionView=traceList"
+        },
+        {
+          "title": "Traces Drilldown: all services",
+          "targetBlank": true,
+          "url": "/a/grafana-exploretraces-app/explore?${__url_time_range}&var-ds=${tempo}&var-primarySignal=nestedSetParent%3C0&actionView=breakdown"
+        }
+      ],
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "tempo",
+            "uid": "${tempo}"
+          },
+          "queryType": "traceql",
+          "query": "{resource.service.name=~\"${service:regex}\" && trace:rootName !~ \"http get /actuator.*\" && trace:duration > $min_duration}",
+          "limit": 50,
+          "spss": 3,
+          "tableType": "traces"
+        }
+      ],
+      "transformations": [
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {
+              "traceService": true
+            }
+          }
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "align": "auto",
+            "cellOptions": {
+              "type": "auto"
+            },
+            "inspect": false
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "duration"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 90
+              }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "showHeader": true,
+        "cellHeight": "sm",
+        "footer": {
+          "show": false,
+          "reducer": [
+            "sum"
+          ],
+          "fields": ""
+        },
+        "sortBy": [
+          {
+            "displayName": "Duration",
+            "desc": true
+          }
+        ]
+      }
+    },
+    {
+      "id": 54,
+      "type": "table",
+      "title": "Traces with errors",
+      "description": "Traces that contain a span that ended with an exception. A trace or span ID opens the trace, Ctrl+click opens it in a new tab",
+      "datasource": {
+        "type": "tempo",
+        "uid": "${tempo}"
+      },
+      "gridPos": {
+        "x": 12,
+        "y": 132,
+        "w": 12,
+        "h": 10
+      },
+      "links": [
+        {
+          "title": "Traces Drilldown: ${service:raw}",
+          "targetBlank": true,
+          "url": "/a/grafana-exploretraces-app/explore?${__url_time_range}&var-ds=${tempo}&var-filters=resource.service.name%7C%3D%7C${service:raw}&var-primarySignal=nestedSetParent%3C0&actionView=traceList"
+        },
+        {
+          "title": "Traces Drilldown: all services",
+          "targetBlank": true,
+          "url": "/a/grafana-exploretraces-app/explore?${__url_time_range}&var-ds=${tempo}&var-primarySignal=nestedSetParent%3C0&actionView=breakdown"
+        }
+      ],
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "tempo",
+            "uid": "${tempo}"
+          },
+          "queryType": "traceql",
+          "query": "{resource.service.name=~\"${service:regex}\" && status = error}",
+          "limit": 50,
+          "spss": 3,
+          "tableType": "traces"
+        }
+      ],
+      "transformations": [
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {
+              "traceService": true
+            }
+          }
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "align": "auto",
+            "cellOptions": {
+              "type": "auto"
+            },
+            "inspect": false
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "duration"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 90
+              }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "showHeader": true,
+        "cellHeight": "sm",
+        "footer": {
+          "show": false,
+          "reducer": [
+            "sum"
+          ],
+          "fields": ""
+        },
+        "sortBy": [
+          {
+            "displayName": "Duration",
+            "desc": true
+          }
+        ]
+      }
+    },
+    {
+      "id": 55,
+      "type": "table",
+      "title": "Slow view lifecycle stages",
+      "description": "View lifecycle spans longer than the \"Min duration\" filter. A trace or span ID opens the trace, Ctrl+click opens it in a new tab",
+      "datasource": {
+        "type": "tempo",
+        "uid": "${tempo}"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 142,
+        "w": 12,
+        "h": 10
+      },
+      "links": [
+        {
+          "title": "Traces Drilldown: ${service:raw}",
+          "targetBlank": true,
+          "url": "/a/grafana-exploretraces-app/explore?${__url_time_range}&var-ds=${tempo}&var-filters=resource.service.name%7C%3D%7C${service:raw}&var-primarySignal=nestedSetParent%3C0&actionView=traceList"
+        },
+        {
+          "title": "Traces Drilldown: all services",
+          "targetBlank": true,
+          "url": "/a/grafana-exploretraces-app/explore?${__url_time_range}&var-ds=${tempo}&var-primarySignal=nestedSetParent%3C0&actionView=breakdown"
+        }
+      ],
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "tempo",
+            "uid": "${tempo}"
+          },
+          "queryType": "traceql",
+          "query": "{resource.service.name=~\"${service:regex}\" && name = \"view lifecycle\" && span.view.id =~ \"${view:regex}\" && duration > $min_duration} | select(span.view.id, span.lifecycle.name)",
+          "limit": 50,
+          "spss": 3,
+          "tableType": "spans"
+        }
+      ],
+      "transformations": [
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {
+              "traceService": true,
+              "traceName": true,
+              "time": true,
+              "service.name": true
+            }
+          }
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "align": "auto",
+            "cellOptions": {
+              "type": "auto"
+            },
+            "inspect": false
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "duration"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 90
+              }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "showHeader": true,
+        "cellHeight": "sm",
+        "footer": {
+          "show": false,
+          "reducer": [
+            "sum"
+          ],
+          "fields": ""
+        },
+        "sortBy": [
+          {
+            "displayName": "Duration",
+            "desc": true
+          }
+        ]
+      }
+    },
+    {
+      "id": 56,
+      "type": "table",
+      "title": "Slow DataManager loads",
+      "description": "DataManager load spans longer than the \"Min duration\" filter, with the entity and the JPQL query. A trace or span ID opens the trace, Ctrl+click opens it in a new tab",
+      "datasource": {
+        "type": "tempo",
+        "uid": "${tempo}"
+      },
+      "gridPos": {
+        "x": 12,
+        "y": 142,
+        "w": 12,
+        "h": 10
+      },
+      "links": [
+        {
+          "title": "Traces Drilldown: ${service:raw}",
+          "targetBlank": true,
+          "url": "/a/grafana-exploretraces-app/explore?${__url_time_range}&var-ds=${tempo}&var-filters=resource.service.name%7C%3D%7C${service:raw}&var-primarySignal=nestedSetParent%3C0&actionView=traceList"
+        },
+        {
+          "title": "Traces Drilldown: all services",
+          "targetBlank": true,
+          "url": "/a/grafana-exploretraces-app/explore?${__url_time_range}&var-ds=${tempo}&var-primarySignal=nestedSetParent%3C0&actionView=breakdown"
+        }
+      ],
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "tempo",
+            "uid": "${tempo}"
+          },
+          "queryType": "traceql",
+          "query": "{resource.service.name=~\"${service:regex}\" && name =~ \"load .*\" && span.entity.name =~ \"${entity:regex}\" && duration > $min_duration} | select(span.entity.name, span.jpql.query)",
+          "limit": 50,
+          "spss": 3,
+          "tableType": "spans"
+        }
+      ],
+      "transformations": [
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {
+              "traceService": true,
+              "traceName": true,
+              "time": true,
+              "service.name": true
+            }
+          }
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "align": "auto",
+            "cellOptions": {
+              "type": "auto"
+            },
+            "inspect": false
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "duration"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 90
+              }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "showHeader": true,
+        "cellHeight": "sm",
+        "footer": {
+          "show": false,
+          "reducer": [
+            "sum"
+          ],
+          "fields": ""
+        },
+        "sortBy": [
+          {
+            "displayName": "Duration",
+            "desc": true
+          }
+        ]
+      }
+    },
+    {
+      "id": 57,
+      "type": "row",
+      "title": "Logs",
+      "collapsed": false,
+      "gridPos": {
+        "x": 0,
+        "y": 152,
+        "w": 24,
+        "h": 1
+      },
+      "panels": []
+    },
+    {
+      "id": 58,
+      "type": "timeseries",
+      "title": "Log records per minute by level",
+      "datasource": {
+        "type": "loki",
+        "uid": "${loki}"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 153,
+        "w": 24,
+        "h": 7
+      },
+      "links": [
+        {
+          "title": "Logs Drilldown: ${service:raw}",
+          "targetBlank": true,
+          "url": "/a/grafana-lokiexplore-app/explore/service/${service:raw}/logs?${__url_time_range}&var-ds=${loki}"
+        },
+        {
+          "title": "Logs Drilldown: all services",
+          "targetBlank": true,
+          "url": "/a/grafana-lokiexplore-app/explore?${__url_time_range}&var-ds=${loki}"
+        }
+      ],
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "loki",
+            "uid": "${loki}"
+          },
+          "expr": "sum by (detected_level) (count_over_time({service_name=~\"${service:regex}\"} | detected_level=~\"${level:regex}\" | jmixUser=~\"(?i).*${user:regex}.*\" |~ \"(?i)${search:regex}\" [1m]))",
+          "legendFormat": "{{detected_level}}",
+          "queryType": "range",
+          "step": "1m"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "none",
+          "min": 0,
+          "custom": {
+            "drawStyle": "bars",
+            "lineWidth": 1,
+            "fillOpacity": 70,
+            "stacking": {
+              "mode": "normal"
+            }
+          },
+          "links": [
+            {
+              "title": "Show only ${__field.labels.detected_level} records in the log panels",
+              "url": "/d/${__dashboard.uid}?${__url_time_range}&${datasource:queryparam}&${tempo:queryparam}&${loki:queryparam}&${pyroscope:queryparam}&${app:queryparam}&${instance:queryparam}&${view:queryparam}&${loader:queryparam}&${entity:queryparam}&${service:queryparam}&${min_duration:queryparam}&${user:queryparam}&${search:queryparam}&var-level=${__field.labels.detected_level}"
+            }
+          ]
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "error"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "red"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "warn"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "orange"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "info"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "green"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "debug"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "blue"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "trace"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "purple"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom",
+          "calcs": []
+        },
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "description": "One bar is one minute. Click the top edge of a bar segment and follow the link in the tooltip: it sets the Level filter to the level of the segment, so the log panels below show only these records. Drag over the graph to narrow the time range of the dashboard. A burst of warn or error records usually coincides with failed or slow operations on the metric panels"
+    },
+    {
+      "id": 59,
+      "type": "logs",
+      "title": "Errors and warnings",
+      "description": "Log details of a record contain trace_id; the link next to it opens the trace in Tempo",
+      "datasource": {
+        "type": "loki",
+        "uid": "${loki}"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 160,
+        "w": 24,
+        "h": 10
+      },
+      "links": [
+        {
+          "title": "Logs Drilldown: ${service:raw}",
+          "targetBlank": true,
+          "url": "/a/grafana-lokiexplore-app/explore/service/${service:raw}/logs?${__url_time_range}&var-ds=${loki}"
+        },
+        {
+          "title": "Logs Drilldown: all services",
+          "targetBlank": true,
+          "url": "/a/grafana-lokiexplore-app/explore?${__url_time_range}&var-ds=${loki}"
+        }
+      ],
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "loki",
+            "uid": "${loki}"
+          },
+          "expr": "{service_name=~\"${service:regex}\"} | detected_level=~\"error|warn\" | jmixUser=~\"(?i).*${user:regex}.*\"",
+          "queryType": "range"
+        }
+      ],
+      "options": {
+        "showTime": true,
+        "showLabels": false,
+        "showCommonLabels": false,
+        "wrapLogMessage": true,
+        "prettifyLogMessage": false,
+        "enableLogDetails": true,
+        "enableInfiniteScrolling": true,
+        "dedupStrategy": "none",
+        "sortOrder": "Descending"
+      }
+    },
+    {
+      "id": 60,
+      "type": "logs",
+      "title": "Logs",
+      "description": "Filtered by the Level, User and Search filters. User is the jmixUser MDC value",
+      "datasource": {
+        "type": "loki",
+        "uid": "${loki}"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 170,
+        "w": 24,
+        "h": 14
+      },
+      "links": [
+        {
+          "title": "Logs Drilldown: ${service:raw}",
+          "targetBlank": true,
+          "url": "/a/grafana-lokiexplore-app/explore/service/${service:raw}/logs?${__url_time_range}&var-ds=${loki}"
+        },
+        {
+          "title": "Logs Drilldown: all services",
+          "targetBlank": true,
+          "url": "/a/grafana-lokiexplore-app/explore?${__url_time_range}&var-ds=${loki}"
+        }
+      ],
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "loki",
+            "uid": "${loki}"
+          },
+          "expr": "{service_name=~\"${service:regex}\"} | detected_level=~\"${level:regex}\" | jmixUser=~\"(?i).*${user:regex}.*\" |~ \"(?i)${search:regex}\"",
+          "queryType": "range"
+        }
+      ],
+      "options": {
+        "showTime": true,
+        "showLabels": false,
+        "showCommonLabels": false,
+        "wrapLogMessage": true,
+        "prettifyLogMessage": false,
+        "enableLogDetails": true,
+        "enableInfiniteScrolling": true,
+        "dedupStrategy": "none",
+        "sortOrder": "Descending"
+      }
+    },
+    {
+      "id": 61,
+      "type": "row",
+      "title": "Profiles",
+      "collapsed": false,
+      "gridPos": {
+        "x": 0,
+        "y": 184,
+        "w": 24,
+        "h": 1
+      },
+      "panels": []
+    },
+    {
+      "id": 62,
+      "type": "flamegraph",
+      "title": "CPU time",
+      "description": "Methods that used CPU time in the selected time range. The widest frames take most of the time. The link in the panel header opens the profile in Profiles Drilldown, where it can be exported to pprof or compared with another time range",
+      "datasource": {
+        "type": "grafana-pyroscope-datasource",
+        "uid": "${pyroscope}"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 185,
+        "w": 12,
+        "h": 16
+      },
+      "links": [
+        {
+          "title": "Profiles Drilldown: ${service:raw} (export, diff flame graph)",
+          "targetBlank": true,
+          "url": "/a/grafana-pyroscope-app/explore?explorationType=flame-graph&${__url_time_range}&var-dataSource=${pyroscope}&var-serviceName=${service:raw}&var-profileMetricId=process_cpu:cpu:nanoseconds:cpu:nanoseconds"
+        },
+        {
+          "title": "Profiles Drilldown: all services",
+          "targetBlank": true,
+          "url": "/a/grafana-pyroscope-app/explore?explorationType=all&${__url_time_range}&var-dataSource=${pyroscope}&var-profileMetricId=process_cpu:cpu:nanoseconds:cpu:nanoseconds"
+        }
+      ],
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "grafana-pyroscope-datasource",
+            "uid": "${pyroscope}"
+          },
+          "queryType": "profile",
+          "profileTypeId": "process_cpu:cpu:nanoseconds:cpu:nanoseconds",
+          "labelSelector": "{service_name=~\"${service:regex}\"}",
+          "groupBy": [],
+          "spanSelector": []
+        }
+      ]
+    },
+    {
+      "id": 63,
+      "type": "flamegraph",
+      "title": "Memory allocation",
+      "description": "Methods that allocated memory in the selected time range. The link in the panel header opens the profile in Profiles Drilldown, where it can be exported to pprof or compared with another time range",
+      "datasource": {
+        "type": "grafana-pyroscope-datasource",
+        "uid": "${pyroscope}"
+      },
+      "gridPos": {
+        "x": 12,
+        "y": 185,
+        "w": 12,
+        "h": 16
+      },
+      "links": [
+        {
+          "title": "Profiles Drilldown: ${service:raw} (export, diff flame graph)",
+          "targetBlank": true,
+          "url": "/a/grafana-pyroscope-app/explore?explorationType=flame-graph&${__url_time_range}&var-dataSource=${pyroscope}&var-serviceName=${service:raw}&var-profileMetricId=memory:alloc_in_new_tlab_bytes:bytes:space:bytes"
+        },
+        {
+          "title": "Profiles Drilldown: all services",
+          "targetBlank": true,
+          "url": "/a/grafana-pyroscope-app/explore?explorationType=all&${__url_time_range}&var-dataSource=${pyroscope}&var-profileMetricId=memory:alloc_in_new_tlab_bytes:bytes:space:bytes"
+        }
+      ],
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "grafana-pyroscope-datasource",
+            "uid": "${pyroscope}"
+          },
+          "queryType": "profile",
+          "profileTypeId": "memory:alloc_in_new_tlab_bytes:bytes:space:bytes",
+          "labelSelector": "{service_name=~\"${service:regex}\"}",
+          "groupBy": [],
+          "spanSelector": []
+        }
+      ]
+    },
+    {
+      "id": 64,
+      "type": "flamegraph",
+      "title": "Lock waiting time",
+      "description": "Methods where threads waited for locks. Requires lock profiling in the profiler settings. The link in the panel header opens the profile in Profiles Drilldown, where it can be exported to pprof or compared with another time range",
+      "datasource": {
+        "type": "grafana-pyroscope-datasource",
+        "uid": "${pyroscope}"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 201,
+        "w": 24,
+        "h": 12
+      },
+      "links": [
+        {
+          "title": "Profiles Drilldown: ${service:raw} (export, diff flame graph)",
+          "targetBlank": true,
+          "url": "/a/grafana-pyroscope-app/explore?explorationType=flame-graph&${__url_time_range}&var-dataSource=${pyroscope}&var-serviceName=${service:raw}&var-profileMetricId=mutex:delay:nanoseconds:mutex:count"
+        },
+        {
+          "title": "Profiles Drilldown: all services",
+          "targetBlank": true,
+          "url": "/a/grafana-pyroscope-app/explore?explorationType=all&${__url_time_range}&var-dataSource=${pyroscope}&var-profileMetricId=mutex:delay:nanoseconds:mutex:count"
+        }
+      ],
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "grafana-pyroscope-datasource",
+            "uid": "${pyroscope}"
+          },
+          "queryType": "profile",
+          "profileTypeId": "mutex:delay:nanoseconds:mutex:count",
+          "labelSelector": "{service_name=~\"${service:regex}\"}",
+          "groupBy": [],
+          "spanSelector": []
+        }
+      ]
+    }
+  ]
+}

@@ -4,11 +4,12 @@
 This repository contains two dashboards for the Micrometer metrics that export for the Prometheus datasource.
 This dashboards should be used for the Grafana monitoring system.
 
-There are three dashboards:
+There are four dashboards:
 <ul>
     <li>The first one is for the <b>Jmix 1.6.0</b> version and later.</li>
     <li>The second one is for the <b>Jmix 2.2.0</b> version and later.</li>
     <li>The third one, <b>Jmix 3 Monitoring</b>, is for the <b>Jmix 3.0</b> version and later.</li>
+    <li>The fourth one, <b>Jmix 3 Full Observability</b>, is for the <b>Jmix 3.0</b> version and later and shows traces, logs and profiles together with metrics.</li>
 </ul>
 <img src="images/jmix_dashboard.png" alt="Jmix Dashboard"/>
 
@@ -30,6 +31,37 @@ The dashboard uses the metric tags introduced in Jmix 3: <code>view_id</code>, <
 Like the other dashboards, it reads metrics from the <code>/actuator/prometheus</code> endpoint (see the settings below) and separates applications by the <code>application</code> tag. When importing the dashboard, select the Prometheus data source.
 
 <img src="images/jmix_3_monitoring.png" alt="Jmix 3 Monitoring dashboard"/>
+
+<h2>Jmix 3 Full Observability</h2>
+
+The <code>Jmix 3 Full Observability.json</code> dashboard shows metrics together with traces, logs and profiles, for example from the Grafana LGTM stack. Its metric rows are the rows of the Jmix 3 Monitoring dashboard, and the duration graphs show exemplars: the tooltip of a point links to the trace of that operation. Three more rows follow:
+<ul>
+    <li><b>Traces</b>: slow requests, traces with errors, slow view lifecycle stages and slow <code>DataManager</code> loads with the entity name and the JPQL query. The <b>Min duration</b> filter sets the duration threshold.</li>
+    <li><b>Logs</b>: log records per minute by level, warnings and errors, and the log with filters by level, user (the <code>jmixUser</code> MDC value) and text.</li>
+    <li><b>Profiles</b>: flame graphs of CPU time, memory allocation and lock waiting time.</li>
+</ul>
+
+The dashboard reads metrics from a Prometheus that scrapes the <code>/actuator/prometheus</code> endpoint, traces from Tempo, logs from Loki and profiles from Pyroscope. When importing the dashboard, select all four data sources. Metrics are filtered by the <code>application</code> tag, traces, logs and profiles by the OpenTelemetry service name, which is <code>spring.application.name</code> by default.
+
+Exemplars require the following:
+<ul>
+    <li>Tracing is enabled in the application. The Prometheus registry of Micrometer then attaches trace and span IDs to the timer series. Histograms are not required.</li>
+    <li>Prometheus runs with <code>--enable-feature=exemplar-storage</code>.</li>
+    <li>The Prometheus data source in Grafana links the <code>trace_id</code> label to the Tempo data source (<b>Exemplars</b> in the data source settings).</li>
+</ul>
+Metrics exported over OTLP carry no exemplars and no timer maximum, so the dashboard expects the <code>/actuator/prometheus</code> endpoint for metrics. Traces and logs are still sent over OTLP.
+
+The links in the headers of the Traces, Logs and Profiles panels open the Grafana Drilldown apps in a new tab, with the same time range, for the selected service or for all services. In Profiles Drilldown a profile can be exported to pprof or compared with another time range.
+
+The dashboard does not contain the links between signals: they are settings of the Grafana data sources and are not imported with the dashboard.
+<ul>
+    <li>The <b>Trace</b> link of an exemplar: the Prometheus data source, <b>Exemplars</b>.</li>
+    <li><b>Logs for this span</b> in a trace: the Tempo data source, <b>Trace to logs</b>.</li>
+    <li><b>Profiles for this span</b> in a trace: the Tempo data source, <b>Trace to profiles</b>.</li>
+    <li>The trace link in a log record: the Loki data source, <b>Derived fields</b>.</li>
+</ul>
+
+<img src="images/jmix_3_full_observability.png" alt="Jmix 3 Full Observability dashboard"/>
 
 <h2>Base Prometheus Micrometer Settings for Jmix Application</h2>
 
